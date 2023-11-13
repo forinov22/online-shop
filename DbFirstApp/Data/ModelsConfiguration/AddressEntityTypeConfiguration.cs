@@ -1,0 +1,26 @@
+﻿using DbFirstApp.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace DbFirstApp.Data.ModelsConfiguration;
+
+public class AddressEntityTypeConfiguration : IEntityTypeConfiguration<Address>
+{
+    public void Configure(EntityTypeBuilder<Address> builder)
+    {
+        builder
+            .HasKey(e => e.Id)
+            .HasName("Adresses_pkey");
+
+        builder
+            .Property(e => e.UserId)
+            .ValueGeneratedOnAdd();
+
+        builder
+            .HasOne(d => d.User)
+            .WithMany(p => p.Addresses)
+            .HasForeignKey(d => d.UserId)
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .HasConstraintName("Adresses_a_user_id_fkey");
+    }
+}
