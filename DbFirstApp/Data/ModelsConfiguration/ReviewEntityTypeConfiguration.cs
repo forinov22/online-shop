@@ -28,13 +28,11 @@ public class ReviewEntityTypeConfiguration : IEntityTypeConfiguration<Review>
         builder
             .HasOne(d => d.Product).WithMany(p => p.Reviews)
             .HasForeignKey(d => d.ProductId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("Reviews_product_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
 
         builder
             .HasOne(d => d.User).WithMany(p => p.Reviews)
             .HasForeignKey(d => d.UserId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("Reviews_user_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

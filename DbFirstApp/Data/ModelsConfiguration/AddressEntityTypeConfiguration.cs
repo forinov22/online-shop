@@ -19,7 +19,6 @@ public class AddressEntityTypeConfiguration : IEntityTypeConfiguration<Address>
         builder
             .HasOne(d => d.User)
             .WithOne(p => p.Address)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("Adresses_a_user_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

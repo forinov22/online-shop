@@ -33,14 +33,12 @@ public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
             .HasOne(d => d.Brand)
             .WithMany(p => p.Products)
             .HasForeignKey(d => d.BrandId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("Products_brand_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
 
         builder
             .HasOne(d => d.Category)
             .WithMany(p => p.Products)
             .HasForeignKey(d => d.CategoryId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("Products_category_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

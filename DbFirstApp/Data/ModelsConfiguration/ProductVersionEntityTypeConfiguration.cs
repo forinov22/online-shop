@@ -30,21 +30,18 @@ public class ProductVersionEntityTypeConfiguration : IEntityTypeConfiguration<Pr
             .HasOne(d => d.Color)
             .WithMany(p => p.ProductVersions)
             .HasForeignKey(d => d.ColorId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("ProductVersions_color_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
 
         builder
             .HasOne(d => d.Product)
             .WithMany(p => p.ProductVersions)
             .HasForeignKey(d => d.ProductId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("ProductVersions_product_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
 
         builder
             .HasOne(d => d.Size)
             .WithMany(p => p.ProductVersions)
             .HasForeignKey(d => d.SizeId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("ProductVersions_size_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

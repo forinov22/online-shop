@@ -24,7 +24,6 @@ public class MediaEntityTypeConfiguration : IEntityTypeConfiguration<Media>
             .HasOne(d => d.Product)
             .WithMany(p => p.Media)
             .HasForeignKey(d => d.ProductId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("Medias_m_product_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

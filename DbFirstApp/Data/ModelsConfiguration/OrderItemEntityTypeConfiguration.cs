@@ -24,14 +24,12 @@ public class OrderItemEntityTypeConfiguration : IEntityTypeConfiguration<OrderIt
             .HasOne(d => d.Order)
             .WithMany(p => p.OrderItems)
             .HasForeignKey(d => d.OrderId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("OrderItems_order_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
 
         builder
             .HasOne(d => d.ProductVersion)
             .WithMany(p => p.OrderItems)
             .HasForeignKey(d => d.ProductVersionId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("OrderItems_product_version_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

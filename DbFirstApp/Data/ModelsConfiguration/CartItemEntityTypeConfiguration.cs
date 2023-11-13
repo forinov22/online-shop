@@ -24,14 +24,12 @@ public class CartItemEntityTypeConfiguration : IEntityTypeConfiguration<CartItem
             .HasOne(d => d.ProductVersion)
             .WithMany(p => p.CartItems)
             .HasForeignKey(d => d.ProductVersionId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("CartItems_product_version_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
 
         builder
             .HasOne(d => d.User)
             .WithMany(p => p.CartItems)
             .HasForeignKey(d => d.UserId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("CartItems_user_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

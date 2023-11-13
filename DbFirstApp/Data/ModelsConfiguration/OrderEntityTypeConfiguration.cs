@@ -32,14 +32,12 @@ public class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
             .HasOne(d => d.Address)
             .WithMany(p => p.Orders)
             .HasForeignKey(d => d.AddressId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("Orders_adress_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
 
         builder
             .HasOne(d => d.User)
             .WithMany(p => p.Orders)
             .HasForeignKey(d => d.UserId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("Orders_o_user_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

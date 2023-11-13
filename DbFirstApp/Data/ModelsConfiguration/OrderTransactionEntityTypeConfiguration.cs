@@ -24,7 +24,6 @@ public class OrderTransactionEntityTypeConfiguration : IEntityTypeConfiguration<
             .HasOne(d => d.Order)
             .WithMany(p => p.OrderTransactions)
             .HasForeignKey(d => d.OrderId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("OrderTransactions_order_id_fkey");
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }
