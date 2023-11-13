@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DbFirstApp.Models;
 
-public partial class Product
+public class Product
 {
     public int Id { get; set; }
 

@@ -19,7 +19,7 @@ public partial class User
     
     public UserType UserType { get; set; }
     
-    public virtual Address? Address { get; set; }
+    public virtual Address Address { get; set; } = null!;
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 

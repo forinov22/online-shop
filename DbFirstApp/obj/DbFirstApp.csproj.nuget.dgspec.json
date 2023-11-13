@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "/home/egor/projects/online-shop/DbFirstApp/DbFirstApp.csproj": {}
+    "C:\\Users\\forin\\projects\\online-shop\\DbFirstApp\\DbFirstApp.csproj": {}
   },
   "projects": {
-    "/home/egor/projects/online-shop/DbFirstApp/DbFirstApp.csproj": {
+    "C:\\Users\\forin\\projects\\online-shop\\DbFirstApp\\DbFirstApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/egor/projects/online-shop/DbFirstApp/DbFirstApp.csproj",
+        "projectUniqueName": "C:\\Users\\forin\\projects\\online-shop\\DbFirstApp\\DbFirstApp.csproj",
         "projectName": "DbFirstApp",
-        "projectPath": "/home/egor/projects/online-shop/DbFirstApp/DbFirstApp.csproj",
-        "packagesPath": "/home/egor/.nuget/packages/",
-        "outputPath": "/home/egor/projects/online-shop/DbFirstApp/obj/",
+        "projectPath": "C:\\Users\\forin\\projects\\online-shop\\DbFirstApp\\DbFirstApp.csproj",
+        "packagesPath": "C:\\Users\\forin\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\forin\\projects\\online-shop\\DbFirstApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/egor/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\forin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -65,7 +67,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/7.0.113/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     }

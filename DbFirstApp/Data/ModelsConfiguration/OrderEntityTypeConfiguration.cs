@@ -13,7 +13,7 @@ public class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
             .HasName("Orders_pkey");
 
         builder
-            .Property(e => e.AdressId)
+            .Property(e => e.AddressId)
             .ValueGeneratedOnAdd();
 
         builder
@@ -29,9 +29,9 @@ public class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
             .ValueGeneratedOnAdd();
 
         builder
-            .HasOne(d => d.Adress)
+            .HasOne(d => d.Address)
             .WithMany(p => p.Orders)
-            .HasForeignKey(d => d.AdressId)
+            .HasForeignKey(d => d.AddressId)
             .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName("Orders_adress_id_fkey");
 

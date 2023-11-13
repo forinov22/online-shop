@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DbFirstApp.Models;
 
-public partial class Color
+public class Color
 {
     public int Id { get; set; }
 

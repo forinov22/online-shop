@@ -26,7 +26,7 @@ namespace DbFirstApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Brands", x => x.Id);
+                    table.PrimaryKey("Brands_pkey", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -40,7 +40,7 @@ namespace DbFirstApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.PrimaryKey("Categories_pkey", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Categories_Categories_ParentCategoryId",
                         column: x => x.ParentCategoryId,
@@ -58,7 +58,7 @@ namespace DbFirstApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Colors", x => x.Id);
+                    table.PrimaryKey("Colors_pkey", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -71,7 +71,7 @@ namespace DbFirstApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sections", x => x.Id);
+                    table.PrimaryKey("Sections_pkey", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -84,7 +84,7 @@ namespace DbFirstApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sizes", x => x.Id);
+                    table.PrimaryKey("Sizes_pkey", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -102,7 +102,7 @@ namespace DbFirstApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("Users_pkey", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -112,26 +112,24 @@ namespace DbFirstApp.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    Price = table.Column<decimal>(type: "money", nullable: false),
                     BrandId = table.Column<int>(type: "integer", nullable: false),
                     CategoryId = table.Column<int>(type: "integer", nullable: false),
                     AverageRating = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.Id);
+                    table.PrimaryKey("Products_pkey", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Products_Brands_BrandId",
+                        name: "Products_brand_id_fkey",
                         column: x => x.BrandId,
                         principalTable: "Brands",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Products_Categories_CategoryId",
+                        name: "Products_category_id_fkey",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -169,13 +167,12 @@ namespace DbFirstApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Addresses", x => x.Id);
+                    table.PrimaryKey("Adresses_pkey", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Addresses_Users_UserId",
+                        name: "Adresses_a_user_id_fkey",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -191,13 +188,12 @@ namespace DbFirstApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Medias", x => x.Id);
+                    table.PrimaryKey("Medias_pkey", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Medias_Products_ProductId",
+                        name: "Medias_m_product_id_fkey",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -214,25 +210,22 @@ namespace DbFirstApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductVersions", x => x.Id);
+                    table.PrimaryKey("ProductVersions_pkey", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductVersions_Colors_ColorId",
+                        name: "ProductVersions_color_id_fkey",
                         column: x => x.ColorId,
                         principalTable: "Colors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ProductVersions_Products_ProductId",
+                        name: "ProductVersions_product_id_fkey",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ProductVersions_Sizes_SizeId",
+                        name: "ProductVersions_size_id_fkey",
                         column: x => x.SizeId,
                         principalTable: "Sizes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -246,23 +239,21 @@ namespace DbFirstApp.Data.Migrations
                     ProductId = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reviews", x => x.Id);
+                    table.PrimaryKey("Reviews_pkey", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reviews_Products_ProductId",
+                        name: "Reviews_product_id_fkey",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Reviews_Users_UserId",
+                        name: "Reviews_user_id_fkey",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -271,27 +262,25 @@ namespace DbFirstApp.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    Price = table.Column<decimal>(type: "money", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     AddressId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     OrderStatus = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.PrimaryKey("Orders_pkey", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Orders_Addresses_AddressId",
+                        name: "Orders_adress_id_fkey",
                         column: x => x.AddressId,
                         principalTable: "Addresses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Orders_Users_UserId",
+                        name: "Orders_o_user_id_fkey",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -304,19 +293,17 @@ namespace DbFirstApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CartItems", x => new { x.UserId, x.ProductVersionId });
+                    table.PrimaryKey("CartItems_pkey", x => new { x.UserId, x.ProductVersionId });
                     table.ForeignKey(
-                        name: "FK_CartItems_ProductVersions_ProductVersionId",
+                        name: "CartItems_product_version_id_fkey",
                         column: x => x.ProductVersionId,
                         principalTable: "ProductVersions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_CartItems_Users_UserId",
+                        name: "CartItems_user_id_fkey",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -329,38 +316,37 @@ namespace DbFirstApp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderItems", x => new { x.OrderId, x.ProductVersionId });
+                    table.PrimaryKey("OrderItems_pkey", x => new { x.OrderId, x.ProductVersionId });
                     table.ForeignKey(
-                        name: "FK_OrderItems_Orders_OrderId",
+                        name: "OrderItems_order_id_fkey",
                         column: x => x.OrderId,
                         principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_OrderItems_ProductVersions_ProductVersionId",
+                        name: "OrderItems_product_version_id_fkey",
                         column: x => x.ProductVersionId,
                         principalTable: "ProductVersions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "OrderTransactions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     OrderTransactionStatus = table.Column<int>(type: "integer", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    OrderId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderTransactions", x => new { x.Id, x.OrderTransactionStatus });
+                    table.PrimaryKey("OrderTransactions_pkey", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OrderTransactions_Orders_Id",
-                        column: x => x.Id,
+                        name: "OrderTransactions_order_id_fkey",
+                        column: x => x.OrderId,
                         principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -381,6 +367,12 @@ namespace DbFirstApp.Data.Migrations
                 column: "ProductVersionId");
 
             migrationBuilder.CreateIndex(
+                name: "Categories_name_key",
+                table: "Categories",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Categories_ParentCategoryId",
                 table: "Categories",
                 column: "ParentCategoryId");
@@ -391,7 +383,7 @@ namespace DbFirstApp.Data.Migrations
                 column: "SectionsId");
 
             migrationBuilder.CreateIndex(
-                name: "Colors_c_name_key",
+                name: "Colors_name_key",
                 table: "Colors",
                 column: "Name",
                 unique: true);
@@ -423,10 +415,9 @@ namespace DbFirstApp.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderTransactions_Id",
+                name: "IX_OrderTransactions_OrderId",
                 table: "OrderTransactions",
-                column: "Id",
-                unique: true);
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_BrandId",
@@ -439,7 +430,7 @@ namespace DbFirstApp.Data.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "Products_p_name_key",
+                name: "Products_name_key",
                 table: "Products",
                 column: "Name",
                 unique: true);
@@ -482,13 +473,13 @@ namespace DbFirstApp.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "Sizes_name_key",
+                name: "Sizes_s_name_key",
                 table: "Sizes",
                 column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "Users_email_phone_key",
+                name: "Users_u_email_u_phone_key",
                 table: "Users",
                 columns: new[] { "Email", "Phone" },
                 unique: true);

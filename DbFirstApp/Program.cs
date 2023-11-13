@@ -6,23 +6,23 @@ using Microsoft.EntityFrameworkCore;
 var context = new OnlineShopContext();
 context.Database.Migrate();
 
-IEnumerable<Product> getAllProductsOfSelectedBrand(OnlineShopContext ctx, string brandName)
+async Task<IEnumerable<Product>> GetAllProductsByBrand(OnlineShopContext ctx, string brandName)
 {
-    var brand = ctx.Brands.First(b => b.Name == brandName);
-    var products = ctx.Products.Where(p => p.BrandId == brand.Id);
+    var brand = await ctx.Brands.FirstAsync(b => b.Name == brandName);
+    var products = await ctx.Products.Where(p => p.BrandId == brand.Id).ToListAsync();
     return products;
 }
 
-IEnumerable<ProductVersion> getAllProductVersionsOfSelectedProduct(OnlineShopContext ctx, string productName)
+async Task<IEnumerable<ProductVersion>> GetAllProductVersionsByProduct(OnlineShopContext ctx, string productName)
 {
-    var product = ctx.Products.First(p => p.Name == productName);
-    var productVersions = ctx.ProductVersions.Where(pv => pv.ProductId == product.Id);
+    var product = await ctx.Products.FirstAsync(p => p.Name == productName);
+    var productVersions = await ctx.ProductVersions.Where(pv => pv.ProductId == product.Id).ToListAsync();
     return productVersions;
 }
 
-IDictionary<Brand, int> getAllBrandsWithNumberOfTheirProducts(OnlineShopContext ctx)
+async Task<IDictionary<Brand, int>> GetAllBrandsProductCount(OnlineShopContext ctx)
 {
-    var brands = ctx.Brands.Include(b => b.Products).ToList();
+    var brands = await ctx.Brands.Include(b => b.Products).ToListAsync();
     var d = new Dictionary<Brand, int>();
     foreach (var brand in brands)
     {
@@ -31,12 +31,12 @@ IDictionary<Brand, int> getAllBrandsWithNumberOfTheirProducts(OnlineShopContext 
     return d;
 }
 
-IEnumerable<Product> getAllProductsBySectionAndCategory(OnlineShopContext ctx, string sectionName, string categoryName)
+async Task<IEnumerable<Product>> GetAllProductsBySectionAndCategory(OnlineShopContext ctx, string sectionName, string categoryName)
 {
-    var section = ctx.Sections.First(s => s.Name == sectionName);
-    var category = ctx.Categories.Include(c => c.Sections).First(c => c.Name == categoryName);
+    var section = await ctx.Sections.FirstAsync(s => s.Name == sectionName);
+    var category = await ctx.Categories.Include(c => c.Sections).FirstAsync(c => c.Name == categoryName);
 
-    var products = ctx.Products.Where(p => p.CategoryId == category.Id && category.Sections.Contains(section));
+    var products = await ctx.Products.Where(p => p.CategoryId == category.Id && category.Sections.Contains(section)).ToListAsync();
     return products;
 }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DbFirstApp.Models;
 
-public partial class Media
+public class Media
 {
     public int Id { get; set; }
 

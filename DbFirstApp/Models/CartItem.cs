@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DbFirstApp.Models;
 
-public partial class CartItem
+public class CartItem
 {
     public int UserId { get; set; }
 

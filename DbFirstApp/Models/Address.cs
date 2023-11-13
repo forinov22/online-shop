@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DbFirstApp.Models;
 
-public partial class Address
+public class Address
 {
     public int Id { get; set; }
 
@@ -11,7 +11,7 @@ public partial class Address
 
     public int UserId { get; set; }
 
-    public virtual User? User { get; set; }
+    public virtual User User { get; set; } = null!;
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

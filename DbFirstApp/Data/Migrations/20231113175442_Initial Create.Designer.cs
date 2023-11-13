@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbFirstApp.Data.Migrations
 {
     [DbContext(typeof(OnlineShopContext))]
-    [Migration("20231108150855_InitialCreate")]
+    [Migration("20231113175442_Initial Create")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -55,9 +55,11 @@ namespace DbFirstApp.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Adresses_pkey");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -77,7 +79,8 @@ namespace DbFirstApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Brands_pkey");
 
                     b.HasIndex(new[] { "Name" }, "Brands_b_name_key")
                         .IsUnique();
@@ -88,15 +91,18 @@ namespace DbFirstApp.Data.Migrations
             modelBuilder.Entity("DbFirstApp.Models.CartItem", b =>
                 {
                     b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<int>("ProductVersionId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.HasKey("UserId", "ProductVersionId");
+                    b.HasKey("UserId", "ProductVersionId")
+                        .HasName("CartItems_pkey");
 
                     b.HasIndex("ProductVersionId");
 
@@ -116,11 +122,16 @@ namespace DbFirstApp.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<int?>("ParentCategoryId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Categories_pkey");
 
                     b.HasIndex("ParentCategoryId");
+
+                    b.HasIndex(new[] { "Name" }, "Categories_name_key")
+                        .IsUnique();
 
                     b.ToTable("Categories");
                 });
@@ -137,9 +148,10 @@ namespace DbFirstApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Colors_pkey");
 
-                    b.HasIndex(new[] { "Name" }, "Colors_c_name_key")
+                    b.HasIndex(new[] { "Name" }, "Colors_name_key")
                         .IsUnique();
 
                     b.ToTable("Colors");
@@ -166,9 +178,11 @@ namespace DbFirstApp.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("ProductId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Medias_pkey");
 
                     b.HasIndex("ProductId");
 
@@ -187,21 +201,24 @@ namespace DbFirstApp.Data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AddressId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("OrderStatus")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
+                        .HasColumnType("money");
 
                     b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Orders_pkey");
 
                     b.HasIndex("AddressId");
 
@@ -213,15 +230,18 @@ namespace DbFirstApp.Data.Migrations
             modelBuilder.Entity("DbFirstApp.Models.OrderItem", b =>
                 {
                     b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<int>("ProductVersionId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.HasKey("OrderId", "ProductVersionId");
+                    b.HasKey("OrderId", "ProductVersionId")
+                        .HasName("OrderItems_pkey");
 
                     b.HasIndex("ProductVersionId");
 
@@ -231,18 +251,25 @@ namespace DbFirstApp.Data.Migrations
             modelBuilder.Entity("DbFirstApp.Models.OrderTransaction", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<int>("OrderTransactionStatus")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("Id", "OrderTransactionStatus");
+                    b.HasKey("Id")
+                        .HasName("OrderTransactions_pkey");
 
-                    b.HasIndex("Id")
-                        .IsUnique();
+                    b.HasIndex("OrderId");
 
                     b.ToTable("OrderTransactions");
                 });
@@ -259,9 +286,11 @@ namespace DbFirstApp.Data.Migrations
                         .HasColumnType("double precision");
 
                     b.Property<int>("BrandId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -269,15 +298,16 @@ namespace DbFirstApp.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
+                        .HasColumnType("money");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Products_pkey");
 
                     b.HasIndex("BrandId");
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex(new[] { "Name" }, "Products_p_name_key")
+                    b.HasIndex(new[] { "Name" }, "Products_name_key")
                         .IsUnique();
 
                     b.ToTable("Products");
@@ -292,22 +322,26 @@ namespace DbFirstApp.Data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ColorId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<int>("ProductId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
                     b.Property<int>("SizeId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<string>("Sku")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("ProductVersions_pkey");
 
                     b.HasIndex("ColorId");
 
@@ -334,9 +368,10 @@ namespace DbFirstApp.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("ProductId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Rating")
@@ -347,9 +382,11 @@ namespace DbFirstApp.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Reviews_pkey");
 
                     b.HasIndex("ProductId");
 
@@ -370,7 +407,8 @@ namespace DbFirstApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Sections_pkey");
 
                     b.HasIndex(new[] { "Name" }, "Sections_name_key")
                         .IsUnique();
@@ -390,9 +428,10 @@ namespace DbFirstApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Sizes_pkey");
 
-                    b.HasIndex(new[] { "Name" }, "Sizes_name_key")
+                    b.HasIndex(new[] { "Name" }, "Sizes_s_name_key")
                         .IsUnique();
 
                     b.ToTable("Sizes");
@@ -429,9 +468,10 @@ namespace DbFirstApp.Data.Migrations
                     b.Property<int>("UserType")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Users_pkey");
 
-                    b.HasIndex(new[] { "Email", "Phone" }, "Users_email_phone_key")
+                    b.HasIndex(new[] { "Email", "Phone" }, "Users_u_email_u_phone_key")
                         .IsUnique();
 
                     b.ToTable("Users");
@@ -457,8 +497,8 @@ namespace DbFirstApp.Data.Migrations
                     b.HasOne("DbFirstApp.Models.User", "User")
                         .WithOne("Address")
                         .HasForeignKey("DbFirstApp.Models.Address", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("Adresses_a_user_id_fkey");
 
                     b.Navigation("User");
                 });
@@ -468,14 +508,14 @@ namespace DbFirstApp.Data.Migrations
                     b.HasOne("DbFirstApp.Models.ProductVersion", "ProductVersion")
                         .WithMany("CartItems")
                         .HasForeignKey("ProductVersionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("CartItems_product_version_id_fkey");
 
                     b.HasOne("DbFirstApp.Models.User", "User")
                         .WithMany("CartItems")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("CartItems_user_id_fkey");
 
                     b.Navigation("ProductVersion");
 
@@ -496,8 +536,8 @@ namespace DbFirstApp.Data.Migrations
                     b.HasOne("DbFirstApp.Models.Product", "Product")
                         .WithMany("Media")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("Medias_m_product_id_fkey");
 
                     b.Navigation("Product");
                 });
@@ -507,14 +547,14 @@ namespace DbFirstApp.Data.Migrations
                     b.HasOne("DbFirstApp.Models.Address", "Address")
                         .WithMany("Orders")
                         .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("Orders_adress_id_fkey");
 
                     b.HasOne("DbFirstApp.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("Orders_o_user_id_fkey");
 
                     b.Navigation("Address");
 
@@ -526,14 +566,14 @@ namespace DbFirstApp.Data.Migrations
                     b.HasOne("DbFirstApp.Models.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("OrderItems_order_id_fkey");
 
                     b.HasOne("DbFirstApp.Models.ProductVersion", "ProductVersion")
                         .WithMany("OrderItems")
                         .HasForeignKey("ProductVersionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("OrderItems_product_version_id_fkey");
 
                     b.Navigation("Order");
 
@@ -543,10 +583,10 @@ namespace DbFirstApp.Data.Migrations
             modelBuilder.Entity("DbFirstApp.Models.OrderTransaction", b =>
                 {
                     b.HasOne("DbFirstApp.Models.Order", "Order")
-                        .WithOne("OrderTransaction")
-                        .HasForeignKey("DbFirstApp.Models.OrderTransaction", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("OrderTransactions")
+                        .HasForeignKey("OrderId")
+                        .IsRequired()
+                        .HasConstraintName("OrderTransactions_order_id_fkey");
 
                     b.Navigation("Order");
                 });
@@ -556,14 +596,14 @@ namespace DbFirstApp.Data.Migrations
                     b.HasOne("DbFirstApp.Models.Brand", "Brand")
                         .WithMany("Products")
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("Products_brand_id_fkey");
 
                     b.HasOne("DbFirstApp.Models.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("Products_category_id_fkey");
 
                     b.Navigation("Brand");
 
@@ -575,20 +615,20 @@ namespace DbFirstApp.Data.Migrations
                     b.HasOne("DbFirstApp.Models.Color", "Color")
                         .WithMany("ProductVersions")
                         .HasForeignKey("ColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("ProductVersions_color_id_fkey");
 
                     b.HasOne("DbFirstApp.Models.Product", "Product")
                         .WithMany("ProductVersions")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("ProductVersions_product_id_fkey");
 
                     b.HasOne("DbFirstApp.Models.Size", "Size")
                         .WithMany("ProductVersions")
                         .HasForeignKey("SizeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("ProductVersions_size_id_fkey");
 
                     b.Navigation("Color");
 
@@ -602,14 +642,14 @@ namespace DbFirstApp.Data.Migrations
                     b.HasOne("DbFirstApp.Models.Product", "Product")
                         .WithMany("Reviews")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("Reviews_product_id_fkey");
 
                     b.HasOne("DbFirstApp.Models.User", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("Reviews_user_id_fkey");
 
                     b.Navigation("Product");
 
@@ -640,8 +680,7 @@ namespace DbFirstApp.Data.Migrations
                 {
                     b.Navigation("OrderItems");
 
-                    b.Navigation("OrderTransaction")
-                        .IsRequired();
+                    b.Navigation("OrderTransactions");
                 });
 
             modelBuilder.Entity("DbFirstApp.Models.Product", b =>
@@ -667,7 +706,8 @@ namespace DbFirstApp.Data.Migrations
 
             modelBuilder.Entity("DbFirstApp.Models.User", b =>
                 {
-                    b.Navigation("Address");
+                    b.Navigation("Address")
+                        .IsRequired();
 
                     b.Navigation("CartItems");
 

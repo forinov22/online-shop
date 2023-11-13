@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DbFirstApp.Models;
 
-public partial class Size
+public class Size
 {
     public int Id { get; set; }
 

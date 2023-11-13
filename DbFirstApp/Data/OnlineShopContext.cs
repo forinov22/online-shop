@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DbFirstApp.Models;
+using DbFirstApp.Data.ModelsConfiguration;
 using Microsoft.EntityFrameworkCore;
 
 namespace DbFirstApp.Data;
@@ -54,76 +55,20 @@ public partial class OnlineShopContext : DbContext
         modelBuilder.HasPostgresEnum<UserType>();
         modelBuilder.HasPostgresEnum<OrderStatus>();
 
-        modelBuilder.Entity<Address>(entity =>
-        {
-            entity
-                .HasOne(a => a.User)
-                .WithOne(u => u.Address)
-                .HasForeignKey<Address>(a => a.UserId);
-        });
-        
-        modelBuilder.Entity<Brand>(entity =>
-        {
-            entity.HasIndex(e => e.Name, "Brands_b_name_key").IsUnique();
-        });
-
-        modelBuilder.Entity<CartItem>(entity =>
-        {
-            entity.HasKey(ci => new { ci.UserId, ci.ProductVersionId });
-        });
-        
-        modelBuilder.Entity<Color>(entity =>
-        {
-            entity.HasIndex(e => e.Name, "Colors_c_name_key").IsUnique();
-        });
-        
-        modelBuilder.Entity<Media>(entity =>
-        {
-            entity.HasIndex(e => new { e.FileType, e.FileName }, "Medias_file_type_file_name_key").IsUnique();
-        });
-
-        modelBuilder.Entity<OrderItem>(entity =>
-        {
-            entity.HasKey(oi => new { oi.OrderId, oi.ProductVersionId });
-        });
-        
-        modelBuilder.Entity<OrderTransaction>(entity =>
-        {
-            entity.HasKey(e => new {e.Id, e.OrderTransactionStatus});
-            
-            entity
-                .HasOne(ot => ot.Order)
-                .WithOne(o => o.OrderTransaction)
-                .HasForeignKey<OrderTransaction>(ot => ot.Id);
-        });
-        
-        modelBuilder.Entity<Product>(entity =>
-        {
-            entity.HasIndex(e => e.Name, "Products_p_name_key").IsUnique();
-        });
-        
-        modelBuilder.Entity<ProductVersion>(entity =>
-        {
-            entity.HasIndex(e => e.Sku, "ProductVersions_sku_key").IsUnique();
-        });
-        
-        modelBuilder.Entity<Section>(entity =>
-        {
-            entity.HasIndex(e => e.Name, "Sections_name_key").IsUnique();
-        });
-        
-        modelBuilder.Entity<Size>(entity =>
-        {
-            entity.HasIndex(e => e.Name, "Sizes_name_key").IsUnique();
-        });
-        
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasIndex(e => new { e.Email, e.Phone }, "Users_email_phone_key").IsUnique();
-        });
-        
-        OnModelCreatingPartial(modelBuilder);
+        new AddressEntityTypeConfiguration().Configure(modelBuilder.Entity<Address>());
+        new BrandEntityTypeConfiguration().Configure(modelBuilder.Entity<Brand>());
+        new CartItemEntityTypeConfiguration().Configure(modelBuilder.Entity<CartItem>());
+        new CategoryEntityTypeConfiguration().Configure(modelBuilder.Entity<Category>());
+        new ColorEntityTypeConfiguration().Configure(modelBuilder.Entity<Color>());
+        new MediaEntityTypeConfiguration().Configure(modelBuilder.Entity<Media>());
+        new OrderEntityTypeConfiguration().Configure(modelBuilder.Entity<Order>());
+        new OrderItemEntityTypeConfiguration().Configure(modelBuilder.Entity<OrderItem>());
+        new OrderTransactionEntityTypeConfiguration().Configure(modelBuilder.Entity<OrderTransaction>());
+        new ProductEntityTypeConfiguration().Configure(modelBuilder.Entity<Product>());
+        new ProductVersionEntityTypeConfiguration().Configure(modelBuilder.Entity<ProductVersion>());
+        new ReviewEntityTypeConfiguration().Configure(modelBuilder.Entity<Review>());
+        new SectionEntityTypeConfiguration().Configure(modelBuilder.Entity<Section>());
+        new SizeEntityTypeConfiguration().Configure(modelBuilder.Entity<Size>());
+        new UserEntityTypeConfiguration().Configure(modelBuilder.Entity<User>());
     }
-
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
