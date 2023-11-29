@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using OnlineShop.Models;
 using OnlineShop.Services;
 
@@ -9,17 +10,20 @@ namespace OnlineShop.Controllers;
 public class BrandsController : ControllerBase
 {
     private readonly IBrandService _brandService;
+    private readonly IMapper _mapper;
 
-    public BrandsController(IBrandService brandService)
+    public BrandsController(IBrandService brandService, IMapper mapper)
     {
         _brandService = brandService;
+        _mapper = mapper;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Brand>>> GetBrands()
     {
         var brands = await _brandService.GetAllBrandsAsync();
-        return Ok(brands);
+        var brandModels = _mapper.Map<BrandDto>(brands);
+        return Ok(brandModels);
     }
 
     [HttpGet]
@@ -35,13 +39,9 @@ public class BrandsController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> PutBrand([FromRoute] int id, Brand brand)
+    public async Task<IActionResult> PutBrand([FromRoute] int id, UpdateBrandDto dto)
     {
-        if (id != brand.Id)
-        {
-            return BadRequest();
-        }
-
+        var brand = _mapper.Map<Brand>(dto);
         var updatedBrand = await _brandService.UpdateBrandAsync(id, brand);
 
         if (updatedBrand == null) {
@@ -52,8 +52,9 @@ public class BrandsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Brand>> PostBrand(Brand brand)
+    public async Task<ActionResult<Brand>> PostBrand(CreateBrandDto dto)
     {
+        var brand = _mapper.Map<Brand>(dto);
         await _brandService.CreateBrandAsync(brand);
 
         return CreatedAtAction("GetBrand", new { id = brand.Id }, brand);
@@ -62,7 +63,9 @@ public class BrandsController : ControllerBase
     [HttpDelete]
     public async Task<IActionResult> DeleteBrand([FromRoute] int id)
     {
-        if (!await _brandService.DeleteBrandAsync(id)) {
+        var deleted = await _brandService.DeleteBrandAsync(id);
+        
+        if (!deleted) {
             return NotFound();
         }
 

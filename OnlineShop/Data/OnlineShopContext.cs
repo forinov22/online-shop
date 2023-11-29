@@ -45,9 +45,6 @@ public partial class OnlineShopContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("User ID=postgres;Password=2209;Host=localhost;Port=5432;Database=online-shop;");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresEnum<UserType>();
