@@ -9,8 +9,7 @@ public class CategoryEntityTypeConfiguration : IEntityTypeConfiguration<Category
     public void Configure(EntityTypeBuilder<Category> builder)
     {
         builder
-            .HasKey(e => e.Id)
-            .HasName("Categories_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .HasIndex(e => e.Name, "Categories_name_key")

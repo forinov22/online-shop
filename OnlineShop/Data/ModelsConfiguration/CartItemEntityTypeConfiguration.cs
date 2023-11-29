@@ -9,8 +9,7 @@ public class CartItemEntityTypeConfiguration : IEntityTypeConfiguration<CartItem
     public void Configure(EntityTypeBuilder<CartItem> builder)
     {
         builder
-            .HasKey(e => new { e.UserId, e.ProductVersionId })
-            .HasName("CartItems_pkey");
+            .HasKey(e => new { e.UserId, e.ProductVersionId });
 
         builder
             .Property(e => e.UserId)

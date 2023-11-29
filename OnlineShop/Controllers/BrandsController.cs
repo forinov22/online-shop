@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using OnlineShop.Models;
+using OnlineShop.Models.Dto;
 using OnlineShop.Services;
 
 namespace OnlineShop.Controllers;
@@ -22,11 +23,11 @@ public class BrandsController : ControllerBase
     public async Task<ActionResult<IEnumerable<Brand>>> GetBrands()
     {
         var brands = await _brandService.GetAllBrandsAsync();
-        var brandModels = _mapper.Map<BrandDto>(brands);
+        var brandModels = _mapper.Map<IEnumerable<BrandDto>>(brands);
         return Ok(brandModels);
     }
 
-    [HttpGet]
+    [HttpGet("{id}")]
     public async Task<ActionResult<Brand>> GetBrand([FromRoute] int id)
     {
         var brand = await _brandService.GetBrandByIdAsync(id);
@@ -35,7 +36,8 @@ public class BrandsController : ControllerBase
             return NotFound();
         }
 
-        return brand;
+        var brandModel = _mapper.Map<BrandDto>(brand);
+        return Ok(brandModel);
     }
 
     [HttpPut]
@@ -55,9 +57,9 @@ public class BrandsController : ControllerBase
     public async Task<ActionResult<Brand>> PostBrand(CreateBrandDto dto)
     {
         var brand = _mapper.Map<Brand>(dto);
-        await _brandService.CreateBrandAsync(brand);
-
-        return CreatedAtAction("GetBrand", new { id = brand.Id }, brand);
+        var newBrand = await _brandService.CreateBrandAsync(brand);
+        var brandModel = _mapper.Map<BrandDto>(newBrand);
+        return CreatedAtAction(nameof(GetBrand), new { id = brandModel.Id }, brandModel);
     }
 
     [HttpDelete]

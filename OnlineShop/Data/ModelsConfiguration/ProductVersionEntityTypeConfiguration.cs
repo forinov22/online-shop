@@ -9,8 +9,7 @@ public class ProductVersionEntityTypeConfiguration : IEntityTypeConfiguration<Pr
     public void Configure(EntityTypeBuilder<ProductVersion> builder)
     {
         builder
-            .HasKey(e => e.Id)
-            .HasName("ProductVersions_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .HasIndex(e => e.Sku, "ProductVersions_sku_key")

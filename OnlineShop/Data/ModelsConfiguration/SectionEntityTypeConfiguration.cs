@@ -9,8 +9,7 @@ public class SectionEntityTypeConfiguration : IEntityTypeConfiguration<Section>
     public void Configure(EntityTypeBuilder<Section> builder)
     {
         builder
-            .HasKey(e => e.Id)
-            .HasName("Sections_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .HasIndex(e => e.Name, "Sections_name_key")

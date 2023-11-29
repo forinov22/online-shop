@@ -1,3 +1,5 @@
+namespace OnlineShop.Models.Dto;
+
 using OnlineShop.Models;
 
 public record BrandDto(int Id, string Name, IEnumerable<Product> Products);

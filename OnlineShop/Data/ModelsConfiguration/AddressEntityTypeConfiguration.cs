@@ -9,8 +9,7 @@ public class AddressEntityTypeConfiguration : IEntityTypeConfiguration<Address>
     public void Configure(EntityTypeBuilder<Address> builder)
     {
         builder
-            .HasKey(e => e.Id)
-            .HasName("Adresses_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .Property(e => e.UserId)

@@ -10,8 +10,7 @@ public class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
     {
 
         builder
-            .HasKey(e => e.Id)
-            .HasName("Products_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .HasIndex(e => e.Name, "Products_name_key")

@@ -9,8 +9,7 @@ public class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
     public void Configure(EntityTypeBuilder<Order> builder)
     {
         builder
-            .HasKey(e => e.Id)
-            .HasName("Orders_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .Property(e => e.AddressId)

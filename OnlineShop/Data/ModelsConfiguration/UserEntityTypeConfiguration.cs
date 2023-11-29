@@ -9,8 +9,7 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder
-            .HasKey(e => e.Id)
-            .HasName("Users_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .HasIndex(e => new { e.Email, e.Phone }, "Users_u_email_u_phone_key")

@@ -9,8 +9,7 @@ public class MediaEntityTypeConfiguration : IEntityTypeConfiguration<Media>
     public void Configure(EntityTypeBuilder<Media> builder)
     {
         builder
-            .HasKey(e => e.Id)
-            .HasName("Medias_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .HasIndex(e => new { e.FileType, e.FileName }, "Medias_file_type_file_name_key")

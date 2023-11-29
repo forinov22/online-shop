@@ -10,8 +10,7 @@ public class ReviewEntityTypeConfiguration : IEntityTypeConfiguration<Review>
     {
 
         builder
-            .HasKey(e => e.Id)
-            .HasName("Reviews_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .Property(e => e.CreatedAt)
