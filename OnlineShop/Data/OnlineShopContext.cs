@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using OnlineShop.Models;
+using OnlineShop.Domains;
 
-namespace DbFirstApp.Data;
+namespace OnlineShop.Data;
 
 public partial class OnlineShopContext : DbContext
 {

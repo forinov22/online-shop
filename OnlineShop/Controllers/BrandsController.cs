@@ -1,7 +1,5 @@
-﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using OnlineShop.Models;
-using OnlineShop.Models.Dto;
+using OnlineShop.Models.DTOs.OnlineShop.Domains;
 using OnlineShop.Services;
 
 namespace OnlineShop.Controllers;
@@ -11,66 +9,56 @@ namespace OnlineShop.Controllers;
 public class BrandsController : ControllerBase
 {
     private readonly IBrandService _brandService;
-    private readonly IMapper _mapper;
 
-    public BrandsController(IBrandService brandService, IMapper mapper)
+    public BrandsController(IBrandService brandService)
     {
         _brandService = brandService;
-        _mapper = mapper;
     }
-
+    
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Brand>>> GetBrands()
+    public async Task<ActionResult<IEnumerable<BrandDto>>> GetBrands()
     {
         var brands = await _brandService.GetAllBrandsAsync();
-        var brandModels = _mapper.Map<IEnumerable<BrandDto>>(brands);
-        return Ok(brandModels);
+        return Ok(brands);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Brand>> GetBrand([FromRoute] int id)
+    [HttpGet("{brandId:int}")]
+    public async Task<ActionResult<BrandDto>> GetBrand([FromRoute] int brandId)
     {
-        var brand = await _brandService.GetBrandByIdAsync(id);
+        var brand = await _brandService.GetBrandByIdAsync(brandId);
         
-        if (brand == null) {
+        if (brand == null)
             return NotFound();
-        }
-
-        var brandModel = _mapper.Map<BrandDto>(brand);
-        return Ok(brandModel);
-    }
-
-    [HttpPut]
-    public async Task<IActionResult> PutBrand([FromRoute] int id, UpdateBrandDto dto)
-    {
-        var brand = _mapper.Map<Brand>(dto);
-        var updatedBrand = await _brandService.UpdateBrandAsync(id, brand);
-
-        if (updatedBrand == null) {
-            return NotFound();
-        }
-
-        return NoContent();
+        
+        return Ok(brand);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Brand>> PostBrand(CreateBrandDto dto)
+    public async Task<ActionResult<BrandDto>> CreateBrand([FromBody] BrandAdd dto)
     {
-        var brand = _mapper.Map<Brand>(dto);
-        var newBrand = await _brandService.CreateBrandAsync(brand);
-        var brandModel = _mapper.Map<BrandDto>(newBrand);
-        return CreatedAtAction(nameof(GetBrand), new { id = brandModel.Id }, brandModel);
+        var brand = await _brandService.CreateBrandAsync(dto);
+        return Ok(brand);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteBrand([FromRoute] int id)
+    [HttpPut("{brandId:int}")]
+    public async Task<ActionResult<BrandDto>> UpdateBrand([FromRoute] int brandId, [FromBody] BrandUpdate dto)
     {
-        var deleted = await _brandService.DeleteBrandAsync(id);
-        
-        if (!deleted) {
-            return NotFound();
-        }
+        var updatedBrand = await _brandService.UpdateBrandAsync(brandId, dto);
 
+        if (updatedBrand == null)
+            return NotFound();
+
+        return Ok(updatedBrand);
+    }
+    
+    [HttpDelete("{brandId:int}")]
+    public async Task<ActionResult<ColorDto>> DeleteBrand([FromRoute] int brandId)
+    {
+        var deleted = await _brandService.DeleteBrandAsync(brandId);
+        
+        if (!deleted)
+            return NotFound();
+        
         return NoContent();
     }
 }

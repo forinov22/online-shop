@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OnlineShop.Models;
+using OnlineShop.Domains;
 
-namespace DbFirstApp.Data.ModelsConfiguration;
+namespace OnlineShop.Data.ModelsConfiguration;
 
 public class BrandEntityTypeConfiguration : IEntityTypeConfiguration<Brand>
 {

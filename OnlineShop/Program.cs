@@ -1,7 +1,8 @@
-﻿using DbFirstApp.Data;
+﻿using System.Reflection;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using OnlineShop;
+using OnlineShop.Data;
 using OnlineShop.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,13 +17,18 @@ var connPass = builder.Configuration["PostgresPassword"] ?? throw new NullRefere
 strBuilder.Password = connPass;
 
 builder.Services.AddDbContext<OnlineShopContext>(opt => opt.UseNpgsql(strBuilder.ConnectionString));
+builder.Services.AddMapster();
 
+builder.Services.AddScoped<ISizeService, SizeService>();
+builder.Services.AddScoped<IColorService, ColorService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
-builder.Services.AddScoped<IProductVersionService, ProductVersionService>();
 builder.Services.AddScoped<ISectionService, SectionService>();
-builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductVersionService, ProductVersionService>();
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 

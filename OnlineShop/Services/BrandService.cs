@@ -1,71 +1,70 @@
-using DbFirstApp.Data;
-using OnlineShop.Models;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
+using OnlineShop.Data;
+using OnlineShop.Domains;
+using OnlineShop.Models.DTOs.OnlineShop.Domains;
 
 namespace OnlineShop.Services;
 
-public interface IBrandService {
-    Task<IEnumerable<Brand>> GetAllBrandsAsync();
-    Task<Brand?> GetBrandByIdAsync(int id);
-    Task<Brand> CreateBrandAsync(Brand brand);
-    Task<Brand?> UpdateBrandAsync(int id, Brand updatedBrand);
-    Task<bool> DeleteBrandAsync(int id);
-};
+public interface IBrandService
+{
+    Task<IEnumerable<BrandDto>> GetAllBrandsAsync();
+    Task<BrandDto?> GetBrandByIdAsync(int brandId);
+    Task<BrandDto> CreateBrandAsync(BrandAdd dto);
+    Task<BrandDto?> UpdateBrandAsync(int brandId, BrandUpdate dto);
+    Task<bool> DeleteBrandAsync(int brandId);
+}
 
 public class BrandService : IBrandService
 {
-    private readonly OnlineShopContext _ctx;
+    private readonly OnlineShopContext _context;
 
-    public BrandService(OnlineShopContext ctx)
+    public BrandService(OnlineShopContext context)
     {
-        _ctx = ctx;
+        _context = context;
     }
 
-    public async Task<Brand> CreateBrandAsync(Brand brand)
+    public async Task<IEnumerable<BrandDto>> GetAllBrandsAsync()
     {
-        await _ctx.Brands.AddAsync(brand);
-        await _ctx.SaveChangesAsync();
-        return brand;
+        return await _context.Brands.ProjectToType<BrandDto>().ToListAsync();
     }
 
-    public async Task<bool> DeleteBrandAsync(int id)
+    public async Task<BrandDto?> GetBrandByIdAsync(int brandId)
     {
-        var existingBrand = await _ctx.Brands.FindAsync(id);
+        var brand = await _context.Brands.FindAsync(brandId);
+        return brand?.AdaptToDto();
+    }
 
-        if (existingBrand == null) 
+    public async Task<BrandDto> CreateBrandAsync(BrandAdd dto)
+    {
+        var brand = dto.AdaptToBrand();
+        await _context.Brands.AddAsync(brand);
+        await _context.SaveChangesAsync();
+        return brand.AdaptToDto();
+    }
+
+    public async Task<BrandDto?> UpdateBrandAsync(int brandId, BrandUpdate dto)
+    {
+        var existingBrand = await _context.Brands.FindAsync(brandId);
+
+        if (existingBrand == null)
+            return null;
+
+        existingBrand.Name = dto.Name;
+        
+        await _context.SaveChangesAsync();
+        return existingBrand.AdaptToDto();
+    }
+
+    public async Task<bool> DeleteBrandAsync(int brandId)
+    {
+        var existingBrand = await _context.Brands.FindAsync(brandId);
+
+        if (existingBrand == null)
             return false;
 
-        _ctx.Brands.Remove(existingBrand);
-        await _ctx.SaveChangesAsync();
+        _context.Brands.Remove(existingBrand);
+        await _context.SaveChangesAsync();
         return true;
-    }
-
-    public async Task<IEnumerable<Brand>> GetAllBrandsAsync()
-    {
-        return await _ctx.Brands.ToListAsync();
-    }
-
-    public async Task<Brand?> GetBrandByIdAsync(int id)
-    {
-        return await _ctx.Brands.FindAsync(id);
-    }
-
-    public async Task<Brand?> UpdateBrandAsync(int id, Brand updatedBrand)
-    {
-        var brand = await _ctx.Brands.FindAsync(id);
-
-        if (brand != null) {
-            brand.Name = updatedBrand.Name;
-            await _ctx.SaveChangesAsync();
-        }
-
-        /*
-            or 
-            _context.Entry(brand).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            which approach is better?
-        */
-
-        return brand;
     }
 }

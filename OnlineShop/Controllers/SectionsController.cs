@@ -1,7 +1,5 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using OnlineShop.Models;
-using OnlineShop.Models.Dto;
+using OnlineShop.Models.DTOs.OnlineShop.Domains;
 using OnlineShop.Services;
 
 namespace OnlineShop.Controllers;
@@ -10,51 +8,57 @@ namespace OnlineShop.Controllers;
 [ApiController]
 public class SectionsController : ControllerBase
 {
-    private readonly ISectionService sectionService;
-    private readonly IMapper mapper;
+    private readonly ISectionService _sectionService;
 
-    public SectionsController(ISectionService sectionService,
-                              IMapper mapper)
+    public SectionsController(ISectionService sectionService)
     {
-        this.sectionService = sectionService;
-        this.mapper = mapper;
+        _sectionService = sectionService;
     }
-
+    
     [HttpGet]
-    public async Task<IActionResult> GetSections() {
-        var sections = await sectionService.GetAllSectionsAsync();
-        var sectionModels = mapper.Map<IEnumerable<SectionDto>>(sections);
-        return Ok(sectionModels);
+    public async Task<ActionResult<IEnumerable<SectionDto>>> GetSections()
+    {
+        var sections = await _sectionService.GetAllSectionsAsync();
+        return Ok(sections);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetSection([FromRoute] int id) {
-        var section = await sectionService.GetSectionByIdAsync(id);
-
+    [HttpGet("{sectionId:int}")]
+    public async Task<ActionResult<SectionDto>> GetSection([FromRoute] int sectionId)
+    {
+        var section = await _sectionService.GetSectionByIdAsync(sectionId);
+        
         if (section == null)
             return NotFound();
-
-        var sectionModel = mapper.Map<SectionDto>(section);
-        return Ok(sectionModel);
+        
+        return Ok(section);
     }
 
     [HttpPost]
-    public async Task<IActionResult> PostSection([FromBody] CreateSectionDto dto) {
-        var section = mapper.Map<Section>(dto);
-        var newSection = await sectionService.CreateSectionAsync(section);
-        var sectionModel = mapper.Map<SectionDto>(newSection);
-        return CreatedAtAction(nameof(GetSection), new { id = sectionModel.Id }, sectionModel);
+    public async Task<ActionResult<SectionDto>> CreateSection([FromBody] SectionAdd dto)
+    {
+        var section = await _sectionService.CreateSectionAsync(dto);
+        return Ok(section);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutSection([FromRoute] int id, [FromBody] UpdateSectionDto dto) {
-        var section = mapper.Map<Section>(dto);
-        var updatedSection = await sectionService.UpdateSectionAsync(id, section);
+    [HttpPut("{sectionId:int}")]
+    public async Task<ActionResult<SectionDto>> UpdateSection([FromRoute] int sectionId, [FromBody] SectionUpdate dto)
+    {
+        var updatedSection = await _sectionService.UpdateSectionAsync(sectionId, dto);
 
-        if (updatedSection == null) {
+        if (updatedSection == null)
             return NotFound();
-        }
 
+        return Ok(updatedSection);
+    }
+    
+    [HttpDelete("{sectionId:int}")]
+    public async Task<ActionResult<ColorDto>> DeleteSection([FromRoute] int sectionId)
+    {
+        var deleted = await _sectionService.DeleteSectionAsync(sectionId);
+        
+        if (!deleted)
+            return NotFound();
+        
         return NoContent();
     }
 }

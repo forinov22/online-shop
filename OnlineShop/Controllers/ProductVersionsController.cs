@@ -1,58 +1,66 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using OnlineShop.Models;
-using OnlineShop.Models.Dto;
+using OnlineShop.Models.DTOs.OnlineShop.Domains;
 using OnlineShop.Services;
 
 namespace OnlineShop.Controllers;
 
-[Route("api/productversions")]
+[Route("api/productVersions")]
 [ApiController]
 public class ProductVersionsController : ControllerBase
 {
-    private readonly IProductVersionService productVersionService;
-    private readonly IMapper mapper;
+    private readonly IProductVersionService _productVersionService;
 
-    public ProductVersionsController(IProductVersionService productVersionService,
-                                     IMapper mapper)
+    public ProductVersionsController(IProductVersionService productVersionService)
     {
-        this.productVersionService = productVersionService;
-        this.mapper = mapper;
+        _productVersionService = productVersionService;
     }
 
-    [HttpPost("sizes")]
-    public async Task<IActionResult> AddSize([FromBody] CreateSizeDto dto) {
-        var size = mapper.Map<Size>(dto);
-        var newSize = await productVersionService.CreateSizeAsync(size);
-        var sizeDto = mapper.Map<SizeDto>(newSize);
-        return Ok(sizeDto);
+    [HttpGet("{productVersionId:int}")]
+    public async Task<ActionResult<ProductVersionDto>> GetProductVersion([FromRoute] int productVersionId)
+    {
+        var productVersion = await _productVersionService.GetProductVersionByIdAsync(productVersionId);
+
+        if (productVersion == null)
+            return NoContent();
+
+        return Ok(productVersion);
+    }
+    
+    [HttpGet("product/{productId:int}")]
+    public async Task<ActionResult<ProductVersionDto>> GetProductVersions([FromRoute] int productId)
+    {
+        var productVersions = await _productVersionService.GetAllProductVersionsByProductIdAsync(productId);
+        
+        return Ok(productVersions);
     }
 
-    [HttpDelete("sizes")]
-    public async Task<IActionResult> RemoveSize([FromRoute] int id) {
-        var deleted = await productVersionService.DeleteSizeAsync(id);
+    [HttpPost]
+    public async Task<ActionResult<ProductVersionDto>> CreateProductVersion([FromBody] ProductVersionAdd dto)
+    {
+        var productVersion = await _productVersionService.CreateProductVersionAsync(dto);
+        return Ok(productVersion);
+    }
+
+    [HttpPut("{productVersionId:int}")]
+    public async Task<ActionResult<ProductVersionDto>> UpdateProductVersion([FromRoute] int productId,
+        [FromBody] ProductVersionUpdate dto)
+    {
+        var updatedProductVersion = await _productVersionService.UpdateProductVersionAsync(productId, dto);
+
+        if (updatedProductVersion == null)
+            return NotFound();
+
+        return Ok(updatedProductVersion);
+    }
+    
+    [HttpDelete("{productVersionId:int}")]
+    public async Task<ActionResult<ProductVersionDto>> DeleteProductVersion([FromRoute] int productId)
+    {
+        var deleted = await _productVersionService.DeleteProductVersionAsync(productId);
 
         if (!deleted)
             return NotFound();
 
-        return NoContent();
-    }
-
-    [HttpPost("colors")]
-    public async Task<IActionResult> AddColor([FromBody] CreateColorDto dto) {
-        var color = mapper.Map<Color>(dto);
-        var newColor = await productVersionService.CreateColorAsync(color);
-        var colorDto = mapper.Map<ColorDto>(newColor);
-        return Ok(colorDto);
-    }
-
-    [HttpDelete("colors")]
-    public async Task<IActionResult> RemoveColor([FromRoute] int id) {
-        var deleted = await productVersionService.DeleteColorAsync(id);
-
-        if (!deleted)
-            return NotFound();
-            
         return NoContent();
     }
 }

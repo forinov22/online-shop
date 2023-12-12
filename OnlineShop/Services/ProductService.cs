@@ -1,90 +1,78 @@
-using DbFirstApp.Data;
-using OnlineShop.Models;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
+using OnlineShop.Data;
+using OnlineShop.Domains;
+using OnlineShop.Models.DTOs.OnlineShop.Domains;
 
 namespace OnlineShop.Services;
 
-public interface IProductService {
-    Task<IEnumerable<Product>> GetAllProductsAsync();
-    Task<Product?> GetProductByIdAsync(int id);
-    Task<Product> CreateProductAsync(Product product);
-    Task<Product?> UpdateProductAsync(int id, Product updatedProduct);
-    Task<bool> DeleteProductAsync(int id);
-};
+public interface IProductService
+{
+    Task<IEnumerable<ProductDto>> GetAllProductsAsync();
+    Task<ProductDto?> GetProductByIdAsync(int productId);
+    Task<ProductDto> CreateProductAsync(ProductAdd dto);
+    Task<ProductDto?> UpdateProductAsync(int productId, ProductUpdate dto);
+    Task<bool> DeleteProductAsync(int productId);
+}
 
 public class ProductService : IProductService
 {
-    private readonly OnlineShopContext _ctx;
+    private readonly OnlineShopContext _context;
 
-    public ProductService(OnlineShopContext ctx)
+    public ProductService(OnlineShopContext context)
     {
-        _ctx = ctx;
+        _context = context;
     }
 
-    public async Task<Product> CreateProductAsync(Product product)
+    public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
     {
-        await _ctx.Products.AddAsync(product);
-        await _ctx.SaveChangesAsync();
-        return product;
+        return await _context.Products.ProjectToType<ProductDto>().ToListAsync();
     }
 
-    public async Task<bool> DeleteProductAsync(int id)
+    public async Task<ProductDto?> GetProductByIdAsync(int productId)
     {
-        var existingProduct = await _ctx.Products.FindAsync(id);
+        return await _context.Products.ProjectToType<ProductDto>()
+            .FirstOrDefaultAsync(p => p.Id == productId);
+    }
 
-        if (existingProduct == null) 
+    public async Task<ProductDto> CreateProductAsync(ProductAdd dto)
+    {
+        var product = dto.AdaptToProduct();
+        await _context.Products.AddAsync(product);
+        await _context.SaveChangesAsync();
+        var existingProduct = await _context.Products.ProjectToType<ProductDto>()
+            .FirstAsync(p => p.Id == product.Id);
+        return existingProduct;
+    }
+
+    public async Task<ProductDto?> UpdateProductAsync(int productId, ProductUpdate dto)
+    {
+        var existingProduct = await _context.Products
+            .FirstOrDefaultAsync(p => p.Id == productId);
+
+        if (existingProduct == null)
+            return null;
+
+        existingProduct.Name = dto.Name;
+        existingProduct.Price = dto.Price;
+        existingProduct.BrandId = dto.BrandId;
+        existingProduct.CategoryId = dto.CategoryId;
+        existingProduct.AverageRating = dto.AverageRating;
+
+        await _context.SaveChangesAsync();
+        return existingProduct.AdaptToDto();
+    }
+
+    public async Task<bool> DeleteProductAsync(int productId)
+    {
+        var existingProduct = await _context.Products
+            .FirstOrDefaultAsync(p => p.Id == productId);
+
+        if (existingProduct == null)
             return false;
 
-        _ctx.Products.Remove(existingProduct);
-        await _ctx.SaveChangesAsync();
+        _context.Products.Remove(existingProduct);
+        await _context.SaveChangesAsync();
         return true;
     }
-
-    public async Task<IEnumerable<Product>> GetAllProductsAsync()
-    {
-        return await _ctx.Products.ToListAsync();
-    }
-
-    public async Task<Product?> GetProductByIdAsync(int id)
-    {
-        return await _ctx.Products.FindAsync(id);
-    }
-
-    public async Task<Product?> UpdateProductAsync(int id, Product updatedProduct)
-    {
-        var product = await _ctx.Products.FindAsync(id);
-
-        if (product != null) {
-            product.Name = updatedProduct.Name;
-            product.Price = updatedProduct.Price;
-            product.BrandId = updatedProduct.BrandId;
-            product.CategoryId = updatedProduct.CategoryId;
-            product.AverageRating = updatedProduct.AverageRating;
-            await _ctx.SaveChangesAsync();
-        }
-
-        return product;
-    }
-
-    public async Task<ProductVersion> CreateProductVersionAsync(ProductVersion productVersion) {
-        await _ctx.ProductVersions.AddAsync(productVersion);
-        await _ctx.SaveChangesAsync();
-        return productVersion;
-    }
-
-    public async Task<ProductVersion?> UpdateProductVersionAsync(int productVersionId, ProductVersion updatedProductVersion) {
-        var productVersion = await _ctx.ProductVersions.FindAsync(productVersionId);
-
-        if (productVersion != null) {
-            productVersion.Quantity = updatedProductVersion.Quantity;
-            productVersion.Sku = updatedProductVersion.Sku;
-            productVersion.ProductId = updatedProductVersion.ProductId;
-            productVersion.SizeId = updatedProductVersion.SizeId;
-            productVersion.ColorId = updatedProductVersion.ColorId;
-            await _ctx.SaveChangesAsync();
-        }
-
-        return productVersion;
-    }
-
 }
