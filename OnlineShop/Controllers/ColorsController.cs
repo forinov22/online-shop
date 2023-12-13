@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Models.DTOs;
 using OnlineShop.Services;
 
 namespace OnlineShop.Controllers;
@@ -19,35 +19,27 @@ public class ColorsController : ControllerBase
     public async Task<ActionResult<IEnumerable<ColorDto>>> GetColors()
     {
         var colors = await _colorService.GetAllColorsAsync();
-        return Ok(colors);
+        return colors.ToList();
     }
 
     [HttpGet("{colorId:int}")]
     public async Task<ActionResult<ColorDto>> GetColor([FromRoute] int colorId)
     {
         var color = await _colorService.GetColorByIdAsync(colorId);
-        
-        if (color == null)
-            return NotFound();
-        
-        return Ok(color);
+        return color;
     }
 
     [HttpPost]
     public async Task<ActionResult<ColorDto>> CreateColor([FromBody] ColorAdd dto)
     {
         var color = await _colorService.CreateColorAsync(dto);
-        return Ok(color);
+        return color;
     }
     
     [HttpDelete("{colorId:int}")]
     public async Task<ActionResult<ColorDto>> DeleteSisze([FromRoute] int colorId)
     {
         var deleted = await _colorService.DeleteColorAsync(colorId);
-        
-        if (!deleted)
-            return NotFound();
-        
-        return NoContent();
+        return deleted;
     }
 }

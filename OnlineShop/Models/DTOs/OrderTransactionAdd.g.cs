@@ -1,11 +1,8 @@
-using System;
+namespace OnlineShop.Models.DTOs;
 
-namespace OnlineShop.Models.DTOs.OnlineShop.Domains
+public record OrderTransactionAdd
 {
-    public partial class OrderTransactionAdd
-    {
-        public DateTime UpdatedAt { get; set; }
-        public string OrderTransactionStatus { get; set; }
-        public int OrderId { get; set; }
-    }
+    public DateTime UpdatedAt { get; set; }
+    public string OrderTransactionStatus { get; set; }
+    public int OrderId { get; set; }
 }

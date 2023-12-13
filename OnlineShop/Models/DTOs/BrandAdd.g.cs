@@ -1,7 +1,6 @@
-namespace OnlineShop.Models.DTOs.OnlineShop.Domains
+namespace OnlineShop.Models.DTOs;
+
+public record BrandAdd
 {
-    public partial class BrandAdd
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }

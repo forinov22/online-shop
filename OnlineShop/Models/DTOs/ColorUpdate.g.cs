@@ -1,7 +1,6 @@
-namespace OnlineShop.Models.DTOs.OnlineShop.Domains
+namespace OnlineShop.Models.DTOs;
+
+public record ColorUpdate
 {
-    public partial class ColorUpdate
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }

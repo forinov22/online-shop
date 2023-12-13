@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Models.DTOs;
 using OnlineShop.Services;
 
 namespace OnlineShop.Controllers;
@@ -19,35 +19,27 @@ public class SizesController : ControllerBase
     public async Task<ActionResult<IEnumerable<SizeDto>>> GetSizes()
     {
         var sizes = await _sizeService.GetAllSizesAsync();
-        return Ok(sizes);
+        return sizes.ToList();
     }
 
     [HttpGet("{sizeId:int}")]
     public async Task<ActionResult<SizeDto>> GetSize([FromRoute] int sizeId)
     {
         var size = await _sizeService.GetSizeByIdAsync(sizeId);
-        
-        if (size == null)
-            return NotFound();
-        
-        return Ok(size);
+        return size;
     }
 
     [HttpPost]
     public async Task<ActionResult<SizeDto>> CreateSize([FromBody] SizeAdd dto)
     {
         var size = await _sizeService.CreateSizeAsync(dto);
-        return Ok(size);
+        return size;
     }
     
     [HttpDelete("{sizeId:int}")]
     public async Task<ActionResult<SizeDto>> DeleteSisze([FromRoute] int sizeId)
     {
         var deleted = await _sizeService.DeleteSizeAsync(sizeId);
-        
-        if (!deleted)
-            return NotFound();
-        
-        return NoContent();
+        return deleted;
     }
 }

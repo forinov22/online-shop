@@ -1,14 +1,15 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
-using OnlineShop.Domains;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Exceptions;
+using OnlineShop.Models.DTOs;
+using OnlineShop.Models.Mappers;
 
 namespace OnlineShop.Services;
 
 public interface IAddressService
 {
-    Task<AddressDto?> GetAddressByIdAsync(int addressId);
+    Task<AddressDto> GetAddressByIdAsync(int addressId);
     Task<AddressDto> CreateAddressAsync(AddressAdd dto);
 }
 
@@ -21,10 +22,15 @@ public class AddressService : IAddressService
         _context = context;
     }
 
-    public async Task<AddressDto?> GetAddressByIdAsync(int addressId)
+    public async Task<AddressDto> GetAddressByIdAsync(int addressId)
     {
-        return await _context.Addresses.ProjectToType<AddressDto>()
+        var address = await _context.Addresses.ProjectToType<AddressDto>()
             .FirstOrDefaultAsync(a => a.Id == addressId);
+
+        if (address == null)
+            throw new NotFoundException(ExceptionMessages.AddressNotFound);
+
+        return address;
     }
 
     public async Task<AddressDto> CreateAddressAsync(AddressAdd dto)

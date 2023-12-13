@@ -1,18 +1,19 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
-using OnlineShop.Domains;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Exceptions;
+using OnlineShop.Models.DTOs;
+using OnlineShop.Models.Mappers;
 
 namespace OnlineShop.Services;
 
 public interface IProductVersionService
 {
-    Task<ProductVersionDto?> GetProductVersionByIdAsync(int productVersionId);
+    Task<ProductVersionDto> GetProductVersionByIdAsync(int productVersionId);
     Task<IEnumerable<ProductVersionDto>> GetAllProductVersionsByProductIdAsync(int productId);
     Task<ProductVersionDto> CreateProductVersionAsync(ProductVersionAdd dto);
-    Task<ProductVersionDto?> UpdateProductVersionAsync(int productVersionId, ProductVersionUpdate dto);
-    Task<bool> DeleteProductVersionAsync(int productVersionId);
+    Task<ProductVersionDto> UpdateProductVersionAsync(int productVersionId, ProductVersionUpdate dto);
+    Task<ProductVersionDto> DeleteProductVersionAsync(int productVersionId);
 }
 
 public class ProductVersionService : IProductVersionService
@@ -24,10 +25,15 @@ public class ProductVersionService : IProductVersionService
         _context = context;
     }
 
-    public async Task<ProductVersionDto?> GetProductVersionByIdAsync(int productVersionId)
+    public async Task<ProductVersionDto> GetProductVersionByIdAsync(int productVersionId)
     {
-        return await _context.ProductVersions.ProjectToType<ProductVersionDto>()
+        var productVersion = await _context.ProductVersions.ProjectToType<ProductVersionDto>()
             .FirstOrDefaultAsync(pv => pv.Id == productVersionId);
+
+        if (productVersion == null)
+            throw new NotFoundException(ExceptionMessages.ProductVersionNotFound);
+
+        return productVersion;
     }
 
     public async Task<IEnumerable<ProductVersionDto>> GetAllProductVersionsByProductIdAsync(int productId)
@@ -44,12 +50,12 @@ public class ProductVersionService : IProductVersionService
         return productVersion.AdaptToDto();
     }
 
-    public async Task<ProductVersionDto?> UpdateProductVersionAsync(int productVersionId, ProductVersionUpdate dto)
+    public async Task<ProductVersionDto> UpdateProductVersionAsync(int productVersionId, ProductVersionUpdate dto)
     {
         var existingProductVersion = await _context.ProductVersions.FindAsync(productVersionId);
 
         if (existingProductVersion == null)
-            return null;
+            throw new NotFoundException(ExceptionMessages.ProductVersionNotFound);
 
         existingProductVersion.Quantity = dto.Quantity;
         existingProductVersion.Sku = dto.Sku;
@@ -61,15 +67,15 @@ public class ProductVersionService : IProductVersionService
         return existingProductVersion.AdaptToDto();
     }
 
-    public async Task<bool> DeleteProductVersionAsync(int productVersionId)
+    public async Task<ProductVersionDto> DeleteProductVersionAsync(int productVersionId)
     {
         var existingProductVersion = await _context.ProductVersions.FindAsync(productVersionId);
 
         if (existingProductVersion == null)
-            return false;
+            throw new NotFoundException(ExceptionMessages.ProductVersionNotFound);
 
         _context.ProductVersions.Remove(existingProductVersion);
         await _context.SaveChangesAsync();
-        return true;
+        return existingProductVersion.AdaptToDto();
     }
 }

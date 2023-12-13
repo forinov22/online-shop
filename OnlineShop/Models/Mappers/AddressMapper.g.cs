@@ -1,13 +1,13 @@
 using Mapster;
 using Mapster.Utils;
 using OnlineShop.Domains;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Models.DTOs;
 
-namespace OnlineShop.Domains;
+namespace OnlineShop.Models.Mappers;
 
 public static partial class AddressMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig1;
+    private static TypeAdapterConfig TypeAdapterConfig;
         
     public static AddressDto AdaptToDto(this Address entity)
     {
@@ -25,25 +25,11 @@ public static partial class AddressMapper
                 LastName = entity.User.LastName,
                 Password = entity.User.Password,
                 UserType = Enum<UserType>.ToString(entity.User.UserType),
-                Address = TypeAdapterConfig1.GetMapFunction<Address, AddressDto>().Invoke(entity.User.Address)
+                Address = TypeAdapterConfig.GetMapFunction<Address, AddressDto>().Invoke(entity.User.Address)
             }
         };
     }
-    public static AddressDto AdaptTo(this Address entity, AddressDto dto)
-    {
-        if (entity == null)
-        {
-            return null;
-        }
-        AddressDto result = dto ?? new AddressDto();
-            
-        result.Id = entity.Id;
-        result.AddressString = entity.AddressString;
-        result.UserId = entity.UserId;
-        result.User = entity.User.AdaptToDto();
-        return result;
-            
-    }
+    
     public static Address AdaptToAddress(this AddressAdd dto)
     {
         return dto == null ? null : new Address()
@@ -51,39 +37,5 @@ public static partial class AddressMapper
             AddressString = dto.AddressString,
             UserId = dto.UserId
         };
-    }
-    public static Address AdaptTo(this AddressAdd dto, Address entity)
-    {
-        if (dto == null)
-        {
-            return null;
-        }
-        Address result = entity ?? new Address();
-            
-        result.AddressString = dto.AddressString;
-        result.UserId = dto.UserId;
-        return result;
-            
-    }
-    public static Address AdaptToAddress(this AddressUpdate dto)
-    {
-        return dto == null ? null : new Address()
-        {
-            AddressString = dto.AddressString,
-            UserId = dto.UserId
-        };
-    }
-    public static Address AdaptTo(this AddressUpdate dto, Address entity)
-    {
-        if (dto == null)
-        {
-            return null;
-        }
-        Address result = entity ?? new Address();
-            
-        result.AddressString = dto.AddressString;
-        result.UserId = dto.UserId;
-        return result;
-            
     }
 }

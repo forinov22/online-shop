@@ -1,18 +1,19 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
-using OnlineShop.Domains;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Exceptions;
+using OnlineShop.Models.DTOs;
+using OnlineShop.Models.Mappers;
 
 namespace OnlineShop.Services;
 
 public interface IBrandService
 {
     Task<IEnumerable<BrandDto>> GetAllBrandsAsync();
-    Task<BrandDto?> GetBrandByIdAsync(int brandId);
+    Task<BrandDto> GetBrandByIdAsync(int brandId);
     Task<BrandDto> CreateBrandAsync(BrandAdd dto);
-    Task<BrandDto?> UpdateBrandAsync(int brandId, BrandUpdate dto);
-    Task<bool> DeleteBrandAsync(int brandId);
+    Task<BrandDto> UpdateBrandAsync(int brandId, BrandUpdate dto);
+    Task<BrandDto> DeleteBrandAsync(int brandId);
 }
 
 public class BrandService : IBrandService
@@ -29,10 +30,15 @@ public class BrandService : IBrandService
         return await _context.Brands.ProjectToType<BrandDto>().ToListAsync();
     }
 
-    public async Task<BrandDto?> GetBrandByIdAsync(int brandId)
+    public async Task<BrandDto> GetBrandByIdAsync(int brandId)
     {
-        var brand = await _context.Brands.FindAsync(brandId);
-        return brand?.AdaptToDto();
+        var brand = await _context.Brands.ProjectToType<BrandDto>()
+            .FirstOrDefaultAsync(b => b.Id == brandId);
+
+        if (brand == null)
+            throw new NotFoundException(ExceptionMessages.BrandNotFound);
+
+        return brand;
     }
 
     public async Task<BrandDto> CreateBrandAsync(BrandAdd dto)
@@ -43,12 +49,12 @@ public class BrandService : IBrandService
         return brand.AdaptToDto();
     }
 
-    public async Task<BrandDto?> UpdateBrandAsync(int brandId, BrandUpdate dto)
+    public async Task<BrandDto> UpdateBrandAsync(int brandId, BrandUpdate dto)
     {
         var existingBrand = await _context.Brands.FindAsync(brandId);
 
         if (existingBrand == null)
-            return null;
+            throw new NotFoundException(ExceptionMessages.BrandNotFound);
 
         existingBrand.Name = dto.Name;
         
@@ -56,15 +62,15 @@ public class BrandService : IBrandService
         return existingBrand.AdaptToDto();
     }
 
-    public async Task<bool> DeleteBrandAsync(int brandId)
+    public async Task<BrandDto> DeleteBrandAsync(int brandId)
     {
         var existingBrand = await _context.Brands.FindAsync(brandId);
 
         if (existingBrand == null)
-            return false;
+            throw new NotFoundException(ExceptionMessages.BrandNotFound);
 
         _context.Brands.Remove(existingBrand);
         await _context.SaveChangesAsync();
-        return true;
+        return existingBrand.AdaptToDto();
     }
 }

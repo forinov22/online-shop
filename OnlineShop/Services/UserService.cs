@@ -3,16 +3,18 @@ using Mapster.Utils;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
 using OnlineShop.Domains;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Exceptions;
+using OnlineShop.Models.DTOs;
+using OnlineShop.Models.Mappers;
 
 namespace OnlineShop.Services;
 
 public interface IUserService
 {
-    Task<UserDto?> GetUserByIdAsync(int userId);
-    Task<UserDto?> CreateUserAsync(UserAdd dto);
-    Task<UserDto?> UpdateUserAsync(int userId, UserUpdate dto);
-    Task<bool> DeleteUserAsync(int userId);
+    Task<UserDto> GetUserByIdAsync(int userId);
+    Task<UserDto> CreateUserAsync(UserAdd dto);
+    Task<UserDto> UpdateUserAsync(int userId, UserUpdate dto);
+    Task<UserDto> DeleteUserAsync(int userId);
 }
 
 public class UserService : IUserService
@@ -24,14 +26,24 @@ public class UserService : IUserService
         _context = context;
     }
 
-    public async Task<UserDto?> GetUserByIdAsync(int userId)
+    public async Task<UserDto> GetUserByIdAsync(int userId)
     {
-        return await _context.Users.ProjectToType<UserDto>()
+        var user = await _context.Users.ProjectToType<UserDto>()
             .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+            throw new NotFoundException(ExceptionMessages.UserNotFound);
+
+        return user;
     }
 
-    public async Task<UserDto?> CreateUserAsync(UserAdd dto)
+    public async Task<UserDto> CreateUserAsync(UserAdd dto)
     {
+        var candidate = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+        if (candidate != null)
+            throw new AuthorizationException(ExceptionMessages.EmailIsTaken);
+
         var user = dto.AdaptToUser();
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         await _context.Users.AddAsync(user);
@@ -39,18 +51,18 @@ public class UserService : IUserService
         return user.AdaptToDto();
     }
 
-    public async Task<UserDto?> UpdateUserAsync(int userId, UserUpdate dto)
+    public async Task<UserDto> UpdateUserAsync(int userId, UserUpdate dto)
     {
         var existingUser = await _context.Users.FindAsync(userId);
 
         if (existingUser == null)
-            return null;
+            throw new NotFoundException(ExceptionMessages.UserNotFound);
 
         var sameEmail = await _context.Users
             .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
         if (sameEmail != null)
-            return null;
+            throw new AuthorizationException(ExceptionMessages.EmailIsTaken);
 
         existingUser.Email = dto.Email;
         existingUser.Phone = dto.Phone;
@@ -63,15 +75,15 @@ public class UserService : IUserService
         return existingUser.AdaptToDto();
     }
 
-    public async Task<bool> DeleteUserAsync(int userId)
+    public async Task<UserDto> DeleteUserAsync(int userId)
     {
         var existingUser = await _context.Users.FindAsync(userId);
 
         if (existingUser == null)
-            return false;
+            throw new NotFoundException(ExceptionMessages.UserNotFound);
 
         _context.Users.Remove(existingUser);
         await _context.SaveChangesAsync();
-        return true;
+        return existingUser.AdaptToDto();
     }
 }

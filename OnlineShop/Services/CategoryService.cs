@@ -1,18 +1,19 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
-using OnlineShop.Domains;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Exceptions;
+using OnlineShop.Models.DTOs;
+using OnlineShop.Models.Mappers;
 
 namespace OnlineShop.Services;
 
 public interface ICategoryService
 {
     Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync();
-    Task<CategoryDto?> GetCategoryByIdAsync(int categoryId);
+    Task<CategoryDto> GetCategoryByIdAsync(int categoryId);
     Task<CategoryDto> CreateCategoryAsync(CategoryAdd dto);
-    Task<CategoryDto?> UpdateCategoryAsync(int categoryId, CategoryUpdate dto);
-    Task<bool> DeleteCategoryAsync(int categoryId);
+    Task<CategoryDto> UpdateCategoryAsync(int categoryId, CategoryUpdate dto);
+    Task<CategoryDto> DeleteCategoryAsync(int categoryId);
 }
 
 public class CategoryService : ICategoryService
@@ -29,10 +30,15 @@ public class CategoryService : ICategoryService
         return await _context.Categories.ProjectToType<CategoryDto>().ToListAsync();
     }
 
-    public async Task<CategoryDto?> GetCategoryByIdAsync(int categoryId)
+    public async Task<CategoryDto> GetCategoryByIdAsync(int categoryId)
     {
-        return await _context.Categories.ProjectToType<CategoryDto>()
+        var category = await _context.Categories.ProjectToType<CategoryDto>()
             .FirstOrDefaultAsync(c => c.Id == categoryId);
+
+        if (category == null)
+            throw new NotFoundException(ExceptionMessages.CategoryNotFound);
+
+        return category;
     }
 
     public async Task<CategoryDto> CreateCategoryAsync(CategoryAdd dto)
@@ -45,13 +51,13 @@ public class CategoryService : ICategoryService
         return existingCategory;
     }
 
-    public async Task<CategoryDto?> UpdateCategoryAsync(int categoryId, CategoryUpdate dto)
+    public async Task<CategoryDto> UpdateCategoryAsync(int categoryId, CategoryUpdate dto)
     {
         var existingCategory = await _context.Categories
             .FirstOrDefaultAsync(c => c.Id == categoryId);
 
         if (existingCategory == null)
-            return null;
+            throw new NotFoundException(ExceptionMessages.CategoryNotFound);
 
         existingCategory.Name = dto.Name;
         existingCategory.ParentCategoryId = dto?.ParentCategoryId;
@@ -60,15 +66,15 @@ public class CategoryService : ICategoryService
         return existingCategory.AdaptToDto();
     }
 
-    public async Task<bool> DeleteCategoryAsync(int categoryId)
+    public async Task<CategoryDto> DeleteCategoryAsync(int categoryId)
     {
         var existingCategory = await _context.Categories.FindAsync(categoryId);
 
         if (existingCategory == null)
-            return false;
+            throw new NotFoundException(ExceptionMessages.CategoryNotFound);
 
         _context.Categories.Remove(existingCategory);
         await _context.SaveChangesAsync();
-        return true;
+        return existingCategory.AdaptToDto();
     }
 }

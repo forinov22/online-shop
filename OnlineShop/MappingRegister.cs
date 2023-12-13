@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Mapster;
 using OnlineShop.Domains;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Models.DTOs;
 
 namespace OnlineShop;
 
@@ -11,7 +11,7 @@ public class MappingProfile : IRegister
     public void Register(TypeAdapterConfig config)
     {
         config.NewConfig<Category, CategoryDto>()
-            .MaxDepth(3);
+            .MaxDepth(2);
     }
 }
 

@@ -1,8 +1,7 @@
-namespace OnlineShop.Models.DTOs.OnlineShop.Domains
+namespace OnlineShop.Models.DTOs;
+
+public record CartItemAdd
 {
-    public partial class CartItemAdd
-    {
-        public int ProductVersionId { get; set; }
-        public int Quantity { get; set; }
-    }
+    public int ProductVersionId { get; set; }
+    public int Quantity { get; set; }
 }

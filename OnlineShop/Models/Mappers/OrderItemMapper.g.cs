@@ -1,163 +1,113 @@
 using Mapster;
 using Mapster.Utils;
 using OnlineShop.Domains;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Models.DTOs;
 
-namespace OnlineShop.Domains
+namespace OnlineShop.Models.Mappers;
+
+public static partial class OrderItemMapper
 {
-    public static partial class OrderItemMapper
-    {
-        private static TypeAdapterConfig TypeAdapterConfig1;
+    private static TypeAdapterConfig TypeAdapterConfig;
         
-        public static OrderItemDto AdaptToDto(this OrderItem p1)
+    public static OrderItemDto AdaptToDto(this OrderItem entity)
+    {
+        return entity == null ? null : new OrderItemDto()
         {
-            return p1 == null ? null : new OrderItemDto()
+            OrderId = entity.OrderId,
+            ProductVersionId = entity.ProductVersionId,
+            Quantity = entity.Quantity,
+            Order = entity.Order == null ? null : new OrderDto()
             {
-                OrderId = p1.OrderId,
-                ProductVersionId = p1.ProductVersionId,
-                Quantity = p1.Quantity,
-                Order = p1.Order == null ? null : new OrderDto()
+                Id = entity.Order.Id,
+                Price = entity.Order.Price,
+                UserId = entity.Order.UserId,
+                AddressId = entity.Order.AddressId,
+                CreatedAt = entity.Order.CreatedAt,
+                OrderStatus = Enum<OrderStatus>.ToString(entity.Order.OrderStatus),
+                Address = entity.Order.Address == null ? null : new AddressDto()
                 {
-                    Id = p1.Order.Id,
-                    Price = p1.Order.Price,
-                    UserId = p1.Order.UserId,
-                    AddressId = p1.Order.AddressId,
-                    CreatedAt = p1.Order.CreatedAt,
-                    OrderStatus = Enum<OrderStatus>.ToString(p1.Order.OrderStatus),
-                    Address = p1.Order.Address == null ? null : new AddressDto()
+                    Id = entity.Order.Address.Id,
+                    AddressString = entity.Order.Address.AddressString,
+                    UserId = entity.Order.Address.UserId,
+                    User = entity.Order.Address.User == null ? null : new UserDto()
                     {
-                        Id = p1.Order.Address.Id,
-                        AddressString = p1.Order.Address.AddressString,
-                        UserId = p1.Order.Address.UserId,
-                        User = p1.Order.Address.User == null ? null : new UserDto()
-                        {
-                            Id = p1.Order.Address.User.Id,
-                            Email = p1.Order.Address.User.Email,
-                            Phone = p1.Order.Address.User.Phone,
-                            FirstName = p1.Order.Address.User.FirstName,
-                            LastName = p1.Order.Address.User.LastName,
-                            Password = p1.Order.Address.User.Password,
-                            UserType = Enum<UserType>.ToString(p1.Order.Address.User.UserType),
-                            Address = TypeAdapterConfig1.GetMapFunction<Address, AddressDto>().Invoke(p1.Order.Address.User.Address)
-                        }
-                    },
-                    User = p1.Order.User == null ? null : new UserDto()
-                    {
-                        Id = p1.Order.User.Id,
-                        Email = p1.Order.User.Email,
-                        Phone = p1.Order.User.Phone,
-                        FirstName = p1.Order.User.FirstName,
-                        LastName = p1.Order.User.LastName,
-                        Password = p1.Order.User.Password,
-                        UserType = Enum<UserType>.ToString(p1.Order.User.UserType),
-                        Address = p1.Order.User.Address == null ? null : new AddressDto()
-                        {
-                            Id = p1.Order.User.Address.Id,
-                            AddressString = p1.Order.User.Address.AddressString,
-                            UserId = p1.Order.User.Address.UserId,
-                            User = TypeAdapterConfig1.GetMapFunction<User, UserDto>().Invoke(p1.Order.User.Address.User)
-                        }
+                        Id = entity.Order.Address.User.Id,
+                        Email = entity.Order.Address.User.Email,
+                        Phone = entity.Order.Address.User.Phone,
+                        FirstName = entity.Order.Address.User.FirstName,
+                        LastName = entity.Order.Address.User.LastName,
+                        Password = entity.Order.Address.User.Password,
+                        UserType = Enum<UserType>.ToString(entity.Order.Address.User.UserType),
+                        Address = TypeAdapterConfig.GetMapFunction<Address, AddressDto>().Invoke(entity.Order.Address.User.Address)
                     }
                 },
-                ProductVersion = p1.ProductVersion == null ? null : new ProductVersionDto()
+                User = entity.Order.User == null ? null : new UserDto()
                 {
-                    Id = p1.ProductVersion.Id,
-                    Quantity = p1.ProductVersion.Quantity,
-                    Sku = p1.ProductVersion.Sku,
-                    ProductId = p1.ProductVersion.ProductId,
-                    SizeId = p1.ProductVersion.SizeId,
-                    ColorId = p1.ProductVersion.ColorId,
-                    Color = p1.ProductVersion.Color == null ? null : new ColorDto()
+                    Id = entity.Order.User.Id,
+                    Email = entity.Order.User.Email,
+                    Phone = entity.Order.User.Phone,
+                    FirstName = entity.Order.User.FirstName,
+                    LastName = entity.Order.User.LastName,
+                    Password = entity.Order.User.Password,
+                    UserType = Enum<UserType>.ToString(entity.Order.User.UserType),
+                    Address = entity.Order.User.Address == null ? null : new AddressDto()
                     {
-                        Id = p1.ProductVersion.Color.Id,
-                        Name = p1.ProductVersion.Color.Name
-                    },
-                    Product = p1.ProductVersion.Product == null ? null : new ProductDto()
-                    {
-                        Id = p1.ProductVersion.Product.Id,
-                        Name = p1.ProductVersion.Product.Name,
-                        Price = p1.ProductVersion.Product.Price,
-                        BrandId = p1.ProductVersion.Product.BrandId,
-                        CategoryId = p1.ProductVersion.Product.CategoryId,
-                        AverageRating = p1.ProductVersion.Product.AverageRating,
-                        Brand = p1.ProductVersion.Product.Brand == null ? null : new BrandDto()
-                        {
-                            Id = p1.ProductVersion.Product.Brand.Id,
-                            Name = p1.ProductVersion.Product.Brand.Name
-                        },
-                        Category = p1.ProductVersion.Product.Category == null ? null : new CategoryDto()
-                        {
-                            Id = p1.ProductVersion.Product.Category.Id,
-                            Name = p1.ProductVersion.Product.Category.Name,
-                            ParentCategoryId = p1.ProductVersion.Product.Category.ParentCategoryId,
-                            ParentCategory = TypeAdapterConfig1.GetMapFunction<Category, CategoryDto>().Invoke(p1.ProductVersion.Product.Category.ParentCategory)
-                        }
-                    },
-                    Size = p1.ProductVersion.Size == null ? null : new SizeDto()
-                    {
-                        Id = p1.ProductVersion.Size.Id,
-                        Name = p1.ProductVersion.Size.Name
+                        Id = entity.Order.User.Address.Id,
+                        AddressString = entity.Order.User.Address.AddressString,
+                        UserId = entity.Order.User.Address.UserId,
+                        User = TypeAdapterConfig.GetMapFunction<User, UserDto>().Invoke(entity.Order.User.Address.User)
                     }
                 }
-            };
-        }
-        public static OrderItemDto AdaptTo(this OrderItem p2, OrderItemDto p3)
-        {
-            if (p2 == null)
+            },
+            ProductVersion = entity.ProductVersion == null ? null : new ProductVersionDto()
             {
-                return null;
+                Id = entity.ProductVersion.Id,
+                Quantity = entity.ProductVersion.Quantity,
+                Sku = entity.ProductVersion.Sku,
+                ProductId = entity.ProductVersion.ProductId,
+                SizeId = entity.ProductVersion.SizeId,
+                ColorId = entity.ProductVersion.ColorId,
+                Color = entity.ProductVersion.Color == null ? null : new ColorDto()
+                {
+                    Id = entity.ProductVersion.Color.Id,
+                    Name = entity.ProductVersion.Color.Name
+                },
+                Product = entity.ProductVersion.Product == null ? null : new ProductDto()
+                {
+                    Id = entity.ProductVersion.Product.Id,
+                    Name = entity.ProductVersion.Product.Name,
+                    Price = entity.ProductVersion.Product.Price,
+                    BrandId = entity.ProductVersion.Product.BrandId,
+                    CategoryId = entity.ProductVersion.Product.CategoryId,
+                    AverageRating = entity.ProductVersion.Product.AverageRating,
+                    Brand = entity.ProductVersion.Product.Brand == null ? null : new BrandDto()
+                    {
+                        Id = entity.ProductVersion.Product.Brand.Id,
+                        Name = entity.ProductVersion.Product.Brand.Name
+                    },
+                    Category = entity.ProductVersion.Product.Category == null ? null : new CategoryDto()
+                    {
+                        Id = entity.ProductVersion.Product.Category.Id,
+                        Name = entity.ProductVersion.Product.Category.Name,
+                        ParentCategoryId = entity.ProductVersion.Product.Category.ParentCategoryId,
+                        ParentCategory = TypeAdapterConfig.GetMapFunction<Category, CategoryDto>().Invoke(entity.ProductVersion.Product.Category.ParentCategory)
+                    }
+                },
+                Size = entity.ProductVersion.Size == null ? null : new SizeDto()
+                {
+                    Id = entity.ProductVersion.Size.Id,
+                    Name = entity.ProductVersion.Size.Name
+                }
             }
-            OrderItemDto result = p3 ?? new OrderItemDto();
-            
-            result.OrderId = p2.OrderId;
-            result.ProductVersionId = p2.ProductVersionId;
-            result.Quantity = p2.Quantity;
-            result.Order = p2.Order.AdaptToDto();
-            result.ProductVersion = p2.ProductVersion.AdaptToDto();
-            return result;
-            
-        }
-        public static OrderItem AdaptToOrderItem(this OrderItemAdd p26)
+        };
+    }
+    
+    public static OrderItem AdaptToOrderItem(this OrderItemAdd dto)
+    {
+        return dto == null ? null : new OrderItem()
         {
-            return p26 == null ? null : new OrderItem()
-            {
-                ProductVersionId = p26.ProductVersionId,
-                Quantity = p26.Quantity
-            };
-        }
-        public static OrderItem AdaptTo(this OrderItemAdd p27, OrderItem p28)
-        {
-            if (p27 == null)
-            {
-                return null;
-            }
-            OrderItem result = p28 ?? new OrderItem();
-            
-            result.ProductVersionId = p27.ProductVersionId;
-            result.Quantity = p27.Quantity;
-            return result;
-            
-        }
-        public static OrderItem AdaptToOrderItem(this OrderItemUpdate p29)
-        {
-            return p29 == null ? null : new OrderItem()
-            {
-                ProductVersionId = p29.ProductVersionId,
-                Quantity = p29.Quantity
-            };
-        }
-        public static OrderItem AdaptTo(this OrderItemUpdate p30, OrderItem p31)
-        {
-            if (p30 == null)
-            {
-                return null;
-            }
-            OrderItem result = p31 ?? new OrderItem();
-            
-            result.ProductVersionId = p30.ProductVersionId;
-            result.Quantity = p30.Quantity;
-            return result;
-            
-        }
+            ProductVersionId = dto.ProductVersionId,
+            Quantity = dto.Quantity
+        };
     }
 }

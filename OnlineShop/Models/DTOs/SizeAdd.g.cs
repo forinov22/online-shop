@@ -1,7 +1,6 @@
-namespace OnlineShop.Models.DTOs.OnlineShop.Domains
+namespace OnlineShop.Models.DTOs;
+
+public record SizeAdd
 {
-    public partial class SizeAdd
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }

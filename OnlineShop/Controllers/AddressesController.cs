@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Models.DTOs;
 using OnlineShop.Services;
 
 namespace OnlineShop.Controllers;
@@ -18,17 +18,13 @@ public class AddressesController : ControllerBase
     public async Task<ActionResult<AddressDto>> GetAddress([FromRoute] int addressId)
     {
         var address = await _addressService.GetAddressByIdAsync(addressId);
-
-        if (address == null)
-            return NotFound();
-        
-        return Ok(address);
+        return address;
     }
 
     [HttpPost]
     public async Task<ActionResult<AddressDto>> CreateAddress([FromBody] AddressAdd dto)
     {
         var address = await _addressService.CreateAddressAsync(dto);
-        return Ok(address);
+        return address;
     }
 }

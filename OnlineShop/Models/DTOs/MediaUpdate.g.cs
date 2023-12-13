@@ -1,10 +1,9 @@
-namespace OnlineShop.Models.DTOs.OnlineShop.Domains
+namespace OnlineShop.Models.DTOs;
+
+public record MediaUpdate
 {
-    public partial class MediaUpdate
-    {
-        public byte[] Bytes { get; set; }
-        public string FileType { get; set; }
-        public string FileName { get; set; }
-        public int ProductId { get; set; }
-    }
+    public byte[] Bytes { get; set; }
+    public string FileType { get; set; }
+    public string FileName { get; set; }
+    public int ProductId { get; set; }
 }

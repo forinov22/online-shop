@@ -1,18 +1,19 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
-using OnlineShop.Domains;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Exceptions;
+using OnlineShop.Models.DTOs;
+using OnlineShop.Models.Mappers;
 
 namespace OnlineShop.Services;
 
 public interface IColorService
 {
     Task<IEnumerable<ColorDto>> GetAllColorsAsync();
-    Task<ColorDto?> GetColorByIdAsync(int colorId);
+    Task<ColorDto> GetColorByIdAsync(int colorId);
     Task<ColorDto> CreateColorAsync(ColorAdd dto);
-    Task<ColorDto?> UpdateColorAsync(int colorId, ColorUpdate dto);
-    Task<bool> DeleteColorAsync(int colorId);
+    Task<ColorDto> UpdateColorAsync(int colorId, ColorUpdate dto);
+    Task<ColorDto> DeleteColorAsync(int colorId);
 }
 
 public class ColorService : IColorService
@@ -29,10 +30,15 @@ public class ColorService : IColorService
         return await _context.Colors.ProjectToType<ColorDto>().ToListAsync();
     }
 
-    public async Task<ColorDto?> GetColorByIdAsync(int colorId)
+    public async Task<ColorDto> GetColorByIdAsync(int colorId)
     {
-        var color = await _context.Colors.FindAsync(colorId);
-        return color?.AdaptToDto();
+        var color = await _context.Colors.ProjectToType<ColorDto>()
+            .FirstOrDefaultAsync(c => c.Id == colorId);
+
+        if (color == null)
+            throw new NotFoundException(ExceptionMessages.ColorNotFound);
+
+        return color;
     }
 
     public async Task<ColorDto> CreateColorAsync(ColorAdd dto)
@@ -43,12 +49,13 @@ public class ColorService : IColorService
         return color.AdaptToDto();
     }
 
-    public async Task<ColorDto?> UpdateColorAsync(int colorId, ColorUpdate dto)
+    public async Task<ColorDto> UpdateColorAsync(int colorId, ColorUpdate dto)
     {
         var existingColor = await _context.Colors.FindAsync(colorId);
 
         if (existingColor == null)
-            return null;
+            throw new NotFoundException(ExceptionMessages.ColorNotFound);
+
 
         existingColor.Name = dto.Name;
 
@@ -56,15 +63,16 @@ public class ColorService : IColorService
         return existingColor.AdaptToDto();
     }
 
-    public async Task<bool> DeleteColorAsync(int colorId)
+    public async Task<ColorDto> DeleteColorAsync(int colorId)
     {
         var existingColor = await _context.Colors.FindAsync(colorId);
 
         if (existingColor == null)
-            return false;
+            throw new NotFoundException(ExceptionMessages.ColorNotFound);
+
 
         _context.Colors.Remove(existingColor);
         await _context.SaveChangesAsync();
-        return true;
+        return existingColor.AdaptToDto();
     }
 }

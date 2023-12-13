@@ -1,11 +1,10 @@
-namespace OnlineShop.Models.DTOs.OnlineShop.Domains
+namespace OnlineShop.Models.DTOs;
+
+public record ProductVersionUpdate
 {
-    public partial class ProductVersionUpdate
-    {
-        public int Quantity { get; set; }
-        public string Sku { get; set; }
-        public int ProductId { get; set; }
-        public int SizeId { get; set; }
-        public int ColorId { get; set; }
-    }
+    public int Quantity { get; set; }
+    public string Sku { get; set; }
+    public int ProductId { get; set; }
+    public int SizeId { get; set; }
+    public int ColorId { get; set; }
 }

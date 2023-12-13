@@ -1,8 +1,7 @@
-namespace OnlineShop.Models.DTOs.OnlineShop.Domains
+namespace OnlineShop.Models.DTOs;
+
+public record CategoryUpdate
 {
-    public partial class CategoryUpdate
-    {
-        public string Name { get; set; }
-        public int? ParentCategoryId { get; set; }
-    }
+    public string Name { get; set; }
+    public int? ParentCategoryId { get; set; }
 }

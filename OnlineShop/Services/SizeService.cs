@@ -1,18 +1,19 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
-using OnlineShop.Domains;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Exceptions;
+using OnlineShop.Models.DTOs;
+using OnlineShop.Models.Mappers;
 
 namespace OnlineShop.Services;
 
 public interface ISizeService
 {
     Task<IEnumerable<SizeDto>> GetAllSizesAsync();
-    Task<SizeDto?> GetSizeByIdAsync(int sizeId);
+    Task<SizeDto> GetSizeByIdAsync(int sizeId);
     Task<SizeDto> CreateSizeAsync(SizeAdd dto);
-    Task<SizeDto?> UpdateSizeAsync(int sizeId, SizeUpdate dto);
-    Task<bool> DeleteSizeAsync(int sizeId);
+    Task<SizeDto> UpdateSizeAsync(int sizeId, SizeUpdate dto);
+    Task<SizeDto> DeleteSizeAsync(int sizeId);
 }
 
 public class SizeService : ISizeService
@@ -29,10 +30,15 @@ public class SizeService : ISizeService
         return await _context.Sizes.ProjectToType<SizeDto>().ToListAsync();
     }
 
-    public async Task<SizeDto?> GetSizeByIdAsync(int sizeId)
+    public async Task<SizeDto> GetSizeByIdAsync(int sizeId)
     {
-        var size = await _context.Sizes.FindAsync(sizeId);
-        return size?.AdaptToDto();
+        var size = await _context.Sizes.ProjectToType<SizeDto>()
+            .FirstOrDefaultAsync(s => s.Id == sizeId);
+
+        if (size == null)
+            throw new NotFoundException(ExceptionMessages.SizeNotFound);
+
+        return size;
     }
 
     public async Task<SizeDto> CreateSizeAsync(SizeAdd dto)
@@ -43,12 +49,12 @@ public class SizeService : ISizeService
         return size.AdaptToDto();
     }
 
-    public async Task<SizeDto?> UpdateSizeAsync(int sizeId, SizeUpdate dto)
+    public async Task<SizeDto> UpdateSizeAsync(int sizeId, SizeUpdate dto)
     {
         var existingSize = await _context.Sizes.FindAsync(sizeId);
 
         if (existingSize == null)
-            return null;
+            throw new NotFoundException(ExceptionMessages.ProductVersionNotFound);
 
         existingSize.Name = dto.Name;
 
@@ -56,15 +62,15 @@ public class SizeService : ISizeService
         return existingSize.AdaptToDto();
     }
 
-    public async Task<bool> DeleteSizeAsync(int sizeId)
+    public async Task<SizeDto> DeleteSizeAsync(int sizeId)
     {
         var existingSize = await _context.Sizes.FindAsync(sizeId);
 
         if (existingSize == null)
-            return false;
+            throw new NotFoundException(ExceptionMessages.ProductVersionNotFound);
 
         _context.Sizes.Remove(existingSize);
         await _context.SaveChangesAsync();
-        return true;
+        return existingSize.AdaptToDto();
     }
 }

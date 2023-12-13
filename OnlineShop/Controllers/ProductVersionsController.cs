@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using OnlineShop.Models.DTOs.OnlineShop.Domains;
+using OnlineShop.Models.DTOs;
 using OnlineShop.Services;
 
 namespace OnlineShop.Controllers;
@@ -19,48 +19,35 @@ public class ProductVersionsController : ControllerBase
     public async Task<ActionResult<ProductVersionDto>> GetProductVersion([FromRoute] int productVersionId)
     {
         var productVersion = await _productVersionService.GetProductVersionByIdAsync(productVersionId);
-
-        if (productVersion == null)
-            return NoContent();
-
-        return Ok(productVersion);
+        return productVersion;
     }
     
     [HttpGet("product/{productId:int}")]
-    public async Task<ActionResult<ProductVersionDto>> GetProductVersions([FromRoute] int productId)
+    public async Task<ActionResult<IEnumerable<ProductVersionDto>>> GetProductVersions([FromRoute] int productId)
     {
         var productVersions = await _productVersionService.GetAllProductVersionsByProductIdAsync(productId);
-        
-        return Ok(productVersions);
+        return productVersions.ToList();
     }
 
     [HttpPost]
     public async Task<ActionResult<ProductVersionDto>> CreateProductVersion([FromBody] ProductVersionAdd dto)
     {
         var productVersion = await _productVersionService.CreateProductVersionAsync(dto);
-        return Ok(productVersion);
+        return productVersion;
     }
 
     [HttpPut("{productVersionId:int}")]
     public async Task<ActionResult<ProductVersionDto>> UpdateProductVersion([FromRoute] int productId,
         [FromBody] ProductVersionUpdate dto)
     {
-        var updatedProductVersion = await _productVersionService.UpdateProductVersionAsync(productId, dto);
-
-        if (updatedProductVersion == null)
-            return NotFound();
-
-        return Ok(updatedProductVersion);
+        var productVersion = await _productVersionService.UpdateProductVersionAsync(productId, dto);
+        return productVersion;
     }
     
     [HttpDelete("{productVersionId:int}")]
     public async Task<ActionResult<ProductVersionDto>> DeleteProductVersion([FromRoute] int productId)
     {
         var deleted = await _productVersionService.DeleteProductVersionAsync(productId);
-
-        if (!deleted)
-            return NotFound();
-
-        return NoContent();
+        return deleted;
     }
 }

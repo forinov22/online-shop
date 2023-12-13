@@ -1,8 +1,7 @@
-namespace OnlineShop.Models.DTOs.OnlineShop.Domains
+namespace OnlineShop.Models.DTOs;
+
+public record AddressUpdate
 {
-    public partial class AddressUpdate
-    {
-        public string AddressString { get; set; }
-        public int UserId { get; set; }
-    }
+    public string AddressString { get; set; }
+    public int UserId { get; set; }
 }

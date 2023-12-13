@@ -3,6 +3,7 @@ using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using OnlineShop.Data;
+using OnlineShop.Exceptions;
 using OnlineShop.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,8 @@ builder.Services.AddScoped<IProductVersionService, ProductVersionService>();
 TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
+
+app.UseExceptionHandling();
 
 if (app.Environment.IsDevelopment())
 {
