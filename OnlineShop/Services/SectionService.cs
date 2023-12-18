@@ -46,7 +46,9 @@ public class SectionService : ISectionService
         var section = dto.AdaptToSection();
         await _context.Sections.AddAsync(section);
         await _context.SaveChangesAsync();
-        return section.AdaptToDto();
+        var existingSection = await _context.Sections.ProjectToType<SectionDto>()
+            .FirstAsync(s => s.Id == section.Id);
+        return existingSection;
     }
 
     public async Task<SectionDto> UpdateSectionAsync(int sectionId, SectionUpdate dto)

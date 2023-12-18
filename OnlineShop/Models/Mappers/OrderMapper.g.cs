@@ -7,7 +7,7 @@ namespace OnlineShop.Models.Mappers;
 
 public static partial class OrderMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig;
+    private static TypeAdapterConfig TypeAdapterConfig = new();
         
     public static OrderDto AdaptToDto(this Order entity)
     {
@@ -53,18 +53,6 @@ public static partial class OrderMapper
                     User = TypeAdapterConfig.GetMapFunction<User, UserDto>().Invoke(entity.User.Address.User)
                 }
             }
-        };
-    }
-    
-    public static Order AdaptToOrder(this OrderAdd dto)
-    {
-        return dto == null ? null : new Order()
-        {
-            Price = dto.Price,
-            UserId = dto.UserId,
-            AddressId = dto.AddressId,
-            CreatedAt = dto.CreatedAt,
-            OrderStatus = dto.OrderStatus == null ? OrderStatus.Processing : Enum<OrderStatus>.Parse(dto.OrderStatus)
         };
     }
 }

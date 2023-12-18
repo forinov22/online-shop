@@ -6,7 +6,7 @@ namespace OnlineShop.Models.Mappers;
 
 public static partial class ProductMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig;
+    private static TypeAdapterConfig TypeAdapterConfig = new();
         
     public static ProductDto AdaptToDto(this Product entity)
     {
@@ -18,8 +18,7 @@ public static partial class ProductMapper
             BrandId = entity.BrandId,
             CategoryId = entity.CategoryId,
             AverageRating = entity.AverageRating,
-            Brand = entity.Brand == null ? null : new BrandDto()
-            {
+            Brand = entity.Brand == null ? null : new BrandDto{
                 Id = entity.Brand.Id,
                 Name = entity.Brand.Name
             },

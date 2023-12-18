@@ -6,7 +6,7 @@ namespace OnlineShop.Models.Mappers;
 
 public static partial class ProductVersionMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig;
+    private static TypeAdapterConfig TypeAdapterConfig = new();
         
     public static ProductVersionDto AdaptToDto(this ProductVersion entity)
     {

@@ -7,7 +7,7 @@ namespace OnlineShop.Models.Mappers;
 
 public static partial class ReviewMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig;
+    private static TypeAdapterConfig TypeAdapterConfig = new();
         
     public static ReviewDto AdaptToDto(this Review entity)
     {

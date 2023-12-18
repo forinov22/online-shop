@@ -32,13 +32,16 @@ public class BrandService : IBrandService
 
     public async Task<BrandDto> GetBrandByIdAsync(int brandId)
     {
-        var brand = await _context.Brands.ProjectToType<BrandDto>()
-            .FirstOrDefaultAsync(b => b.Id == brandId);
+        //var brand = await _context.Brands.ProjectToType<BrandDto>()
+        //    .FirstOrDefaultAsync(b => b.Id == brandId);
+
+        var brand = await _context.Brands.Include(b => b.Products).FirstOrDefaultAsync(b => b.Id == brandId);
+
 
         if (brand == null)
             throw new NotFoundException(ExceptionMessages.BrandNotFound);
 
-        return brand;
+        return brand.AdaptToDto();
     }
 
     public async Task<BrandDto> CreateBrandAsync(BrandAdd dto)
@@ -46,7 +49,9 @@ public class BrandService : IBrandService
         var brand = dto.AdaptToBrand();
         await _context.Brands.AddAsync(brand);
         await _context.SaveChangesAsync();
-        return brand.AdaptToDto();
+        var existingBrand = await _context.Brands.ProjectToType<BrandDto>()
+            .FirstAsync(b => b.Id == brand.Id);
+        return existingBrand;
     }
 
     public async Task<BrandDto> UpdateBrandAsync(int brandId, BrandUpdate dto)

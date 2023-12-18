@@ -27,6 +27,10 @@ public class ExceptionHandlingMiddleware
         {
             await SendError(context, e);
         }
+        catch (OrderStatusException e)
+        {
+            await SendError(context, e);
+        }
     }
 
     private async Task SendError(HttpContext context, Exception e)

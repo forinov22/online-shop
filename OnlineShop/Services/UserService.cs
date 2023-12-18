@@ -48,7 +48,9 @@ public class UserService : IUserService
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-        return user.AdaptToDto();
+        var existingUser = await _context.Users.ProjectToType<UserDto>()
+            .FirstAsync(u => u.Id == user.Id);
+        return existingUser;
     }
 
     public async Task<UserDto> UpdateUserAsync(int userId, UserUpdate dto)

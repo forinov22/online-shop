@@ -11,6 +11,9 @@ public static class ExceptionMessages
     public const string SectionNotFound = "Section not found";
     public const string SizeNotFound = "Size not found";
     public const string UserNotFound = "User not found";
+    public const string MediaNotFound = "Media not found";
+    public const string OrderNotFound = "Order not found";
     public const string EmailIsTaken = "Email is already taken";
     public const string WrongEmailOrPassword = "Wrong email or password";
+    public const string WrongOrderStatus = "Wrong order status";
 }

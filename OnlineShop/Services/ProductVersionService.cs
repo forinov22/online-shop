@@ -47,7 +47,9 @@ public class ProductVersionService : IProductVersionService
         var productVersion = dto.AdaptToProductVersion();
         await _context.ProductVersions.AddAsync(productVersion);
         await _context.SaveChangesAsync();
-        return productVersion.AdaptToDto();
+        var existingProductVersion = await _context.ProductVersions.ProjectToType<ProductVersionDto>()
+            .FirstAsync(pv => pv.Id == productVersion.Id);
+        return existingProductVersion;
     }
 
     public async Task<ProductVersionDto> UpdateProductVersionAsync(int productVersionId, ProductVersionUpdate dto)

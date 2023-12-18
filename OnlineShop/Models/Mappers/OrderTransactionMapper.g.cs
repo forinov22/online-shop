@@ -7,7 +7,7 @@ namespace OnlineShop.Models.Mappers;
 
 public static partial class OrderTransactionMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig;
+    private static TypeAdapterConfig TypeAdapterConfig = new();
         
     public static OrderTransactionDto AdaptToDto(this OrderTransaction entity)
     {

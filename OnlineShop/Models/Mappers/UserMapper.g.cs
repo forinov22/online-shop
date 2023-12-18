@@ -7,7 +7,7 @@ namespace OnlineShop.Models.Mappers;
 
 public static partial class UserMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig;
+    private static TypeAdapterConfig TypeAdapterConfig = new();
         
     public static UserDto AdaptToDto(this User entity)
     {

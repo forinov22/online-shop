@@ -7,7 +7,7 @@ namespace OnlineShop.Models.Mappers;
 
 public static partial class CartItemMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig;
+    private static TypeAdapterConfig TypeAdapterConfig = new();
 
     public static CartItemDto AdaptToDto(this CartItem entity)
     {

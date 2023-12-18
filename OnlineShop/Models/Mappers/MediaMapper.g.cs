@@ -6,14 +6,13 @@ namespace OnlineShop.Models.Mappers;
 
 public static partial class MediaMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig;
+    private static TypeAdapterConfig TypeAdapterConfig = new();
         
     public static MediaDto AdaptToDto(this Media entity)
     {
         return entity == null ? null : new MediaDto()
         {
             Id = entity.Id,
-            Bytes = entity.Bytes,
             FileType = entity.FileType,
             FileName = entity.FileName,
             ProductId = entity.ProductId,
@@ -45,9 +44,6 @@ public static partial class MediaMapper
     {
         return dto == null ? null : new Media()
         {
-            Bytes = dto.Bytes,
-            FileType = dto.FileType,
-            FileName = dto.FileName,
             ProductId = dto.ProductId
         };
     }

@@ -38,6 +38,8 @@ public class AddressService : IAddressService
         var address = dto.AdaptToAddress();
         await _context.Addresses.AddAsync(address);
         await _context.SaveChangesAsync();
-        return address.AdaptToDto();
+        var existingAddress = await _context.Addresses.ProjectToType<AddressDto>()
+            .FirstAsync(a => a.Id == address.Id);
+        return existingAddress;
     }
 }

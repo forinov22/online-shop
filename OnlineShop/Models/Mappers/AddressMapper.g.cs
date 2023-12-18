@@ -7,7 +7,7 @@ namespace OnlineShop.Models.Mappers;
 
 public static partial class AddressMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig;
+    private static TypeAdapterConfig TypeAdapterConfig = new();
         
     public static AddressDto AdaptToDto(this Address entity)
     {

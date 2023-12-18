@@ -46,7 +46,9 @@ public class ColorService : IColorService
         var color = dto.AdaptToColor();
         await _context.Colors.AddAsync(color);
         await _context.SaveChangesAsync();
-        return color.AdaptToDto();
+        var existingColor = await _context.Colors.ProjectToType<ColorDto>()
+            .FirstAsync(c => c.Id == color.Id);
+        return existingColor;
     }
 
     public async Task<ColorDto> UpdateColorAsync(int colorId, ColorUpdate dto)

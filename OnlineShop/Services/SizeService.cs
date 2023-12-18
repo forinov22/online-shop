@@ -46,7 +46,9 @@ public class SizeService : ISizeService
         var size = dto.AdaptToSize();
         await _context.Sizes.AddAsync(size);
         await _context.SaveChangesAsync();
-        return size.AdaptToDto();
+        var existingSize = await _context.Sizes.ProjectToType<SizeDto>()
+            .FirstAsync(s => s.Id == size.Id);
+        return existingSize;
     }
 
     public async Task<SizeDto> UpdateSizeAsync(int sizeId, SizeUpdate dto)

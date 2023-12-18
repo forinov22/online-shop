@@ -44,6 +44,15 @@ public class CategoryService : ICategoryService
     public async Task<CategoryDto> CreateCategoryAsync(CategoryAdd dto)
     {
         var category = dto.AdaptToCategory();
+
+        foreach (var sectionId in dto.Sections)
+        {
+            var section = await _context.Sections.FindAsync(sectionId);
+            if (section == null)
+                throw new NotFoundException(ExceptionMessages.SectionNotFound);
+            category.Sections.Add(section);
+        }
+
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
         var existingCategory = await _context.Categories.ProjectToType<CategoryDto>()

@@ -6,7 +6,7 @@ namespace OnlineShop.Models.Mappers;
 
 public static partial class CategoryMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig;
+    private static TypeAdapterConfig TypeAdapterConfig = new();
         
     public static CategoryDto AdaptToDto(this Category entity)
     {

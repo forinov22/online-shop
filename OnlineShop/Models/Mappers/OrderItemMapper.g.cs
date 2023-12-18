@@ -7,7 +7,7 @@ namespace OnlineShop.Models.Mappers;
 
 public static partial class OrderItemMapper
 {
-    private static TypeAdapterConfig TypeAdapterConfig;
+    private static TypeAdapterConfig TypeAdapterConfig = new();
         
     public static OrderItemDto AdaptToDto(this OrderItem entity)
     {
@@ -99,15 +99,6 @@ public static partial class OrderItemMapper
                     Name = entity.ProductVersion.Size.Name
                 }
             }
-        };
-    }
-    
-    public static OrderItem AdaptToOrderItem(this OrderItemAdd dto)
-    {
-        return dto == null ? null : new OrderItem()
-        {
-            ProductVersionId = dto.ProductVersionId,
-            Quantity = dto.Quantity
         };
     }
 }

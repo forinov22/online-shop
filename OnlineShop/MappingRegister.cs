@@ -10,7 +10,11 @@ public class MappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
+        config.NewConfig<Brand, BrandDto>()
+            .MaxDepth(2);
         config.NewConfig<Category, CategoryDto>()
+            .MaxDepth(2);
+        config.NewConfig<Product, ProductDto>()
             .MaxDepth(2);
     }
 }
