@@ -1,16 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OnlineShop.Models;
+using OnlineShop.Domains;
 
-namespace DbFirstApp.Data.ModelsConfiguration;
+namespace OnlineShop.Data.ModelsConfiguration;
 
 public class CartItemEntityTypeConfiguration : IEntityTypeConfiguration<CartItem>
 {
     public void Configure(EntityTypeBuilder<CartItem> builder)
     {
         builder
-            .HasKey(e => new { e.UserId, e.ProductVersionId })
-            .HasName("CartItems_pkey");
+            .HasKey(e => new { e.UserId, e.ProductVersionId });
 
         builder
             .Property(e => e.UserId)

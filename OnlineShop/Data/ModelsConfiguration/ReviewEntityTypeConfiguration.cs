@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OnlineShop.Models;
+using OnlineShop.Domains;
 
-namespace DbFirstApp.Data.ModelsConfiguration;
+namespace OnlineShop.Data.ModelsConfiguration;
 
 public class ReviewEntityTypeConfiguration : IEntityTypeConfiguration<Review>
 {
@@ -10,8 +10,7 @@ public class ReviewEntityTypeConfiguration : IEntityTypeConfiguration<Review>
     {
 
         builder
-            .HasKey(e => e.Id)
-            .HasName("Reviews_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .Property(e => e.CreatedAt)

@@ -1,16 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OnlineShop.Models;
+using OnlineShop.Domains;
 
-namespace DbFirstApp.Data.ModelsConfiguration;
+namespace OnlineShop.Data.ModelsConfiguration;
 
 public class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
 {
     public void Configure(EntityTypeBuilder<Order> builder)
     {
         builder
-            .HasKey(e => e.Id)
-            .HasName("Orders_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .Property(e => e.AddressId)

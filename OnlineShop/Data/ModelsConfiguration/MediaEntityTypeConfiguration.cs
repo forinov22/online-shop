@@ -1,16 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OnlineShop.Models;
+using OnlineShop.Domains;
 
-namespace DbFirstApp.Data.ModelsConfiguration;
+namespace OnlineShop.Data.ModelsConfiguration;
 
 public class MediaEntityTypeConfiguration : IEntityTypeConfiguration<Media>
 {
     public void Configure(EntityTypeBuilder<Media> builder)
     {
         builder
-            .HasKey(e => e.Id)
-            .HasName("Medias_pkey");
+            .HasKey(e => e.Id);
 
         builder
             .HasIndex(e => new { e.FileType, e.FileName }, "Medias_file_type_file_name_key")
