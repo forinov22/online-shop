@@ -24,8 +24,8 @@ public class CartsController : ControllerBase
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId))
             return Forbid();
 
-        var cartItmes = await _cartService.GetUserCartAsync(userId);
-        return cartItmes.ToList();
+        var cartItems = await _cartService.GetUserCartAsync(userId);
+        return cartItems.ToList();
     }
 
     [HttpGet("{productVersionId:int}")]
@@ -35,7 +35,7 @@ public class CartsController : ControllerBase
             return Forbid();
 
         var cartItem = await _cartService.GetCartItemAsync(userId, productVersionId);
-        return cartItem == null ? NotFound() : cartItem;
+        return cartItem;
     }
 
     [HttpPost]
@@ -49,13 +49,13 @@ public class CartsController : ControllerBase
     }
 
     [HttpPut("{productVersionId:int}")]
-    public async Task<ActionResult<CartItemDto>> UpdateCartItme([FromRoute] int productVersionId, [FromBody] CartItemUpdate dto)
+    public async Task<ActionResult<CartItemDto>> UpdateCartItem([FromRoute] int productVersionId, [FromBody] CartItemUpdate dto)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId))
             return Forbid();
 
-        var cartItem = await _cartService.UpdateCartItemAsync(userId, productVersionId, dto);
-        return cartItem == null ? NotFound() : cartItem;
+        var cartItem = await _cartService.UpdateCartItemQuantityAsync(userId, productVersionId, dto);
+        return cartItem;
     }
 
     [HttpDelete("{productVersionId:int}")]
@@ -65,6 +65,6 @@ public class CartsController : ControllerBase
             return Forbid();
 
         var deleted = await _cartService.DeleteCartItemAsync(userId, productVersionId);
-        return deleted ? NoContent() : NotFound();
+        return NoContent();
     }
 }

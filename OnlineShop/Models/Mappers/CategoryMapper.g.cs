@@ -15,7 +15,6 @@ public static partial class CategoryMapper
             Id = entity.Id,
             Name = entity.Name,
             ParentCategoryId = entity.ParentCategoryId,
-            ParentCategory = TypeAdapterConfig.GetMapFunction<Category, CategoryDto>().Invoke(entity.ParentCategory)
         };
     }
     

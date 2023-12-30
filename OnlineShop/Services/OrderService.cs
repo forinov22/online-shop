@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using OnlineShop.Data;
@@ -15,7 +16,7 @@ public interface IOrderService
     Task<IEnumerable<OrderDto>> GetAllUserOrdersAsync(int userId);
     Task<OrderDto> GetOrderByIdAsync(int orderId);
     Task<OrderDto> CreateOrderAsync(int userId);
-    Task<OrderDto> UpdateOrderAsync(int orderId, OrderUpdate dto);
+    Task<OrderDto> UpdateOrderStatusAsync(int orderId, OrderUpdate dto);
 }
 
 public class OrderService : IOrderService
@@ -33,25 +34,39 @@ public class OrderService : IOrderService
 
     public async Task<OrderDto> CreateOrderAsync(int userId)
     {
+        var user = await _context.Users.FindAsync(userId);
+        if (user is null)
+            throw new NotFoundException(ExceptionMessages.UserNotFound);
+
         var address = await _context.Addresses.FirstOrDefaultAsync(a => a.UserId == userId);
         if (address == null)
             throw new NotFoundException(ExceptionMessages.AddressNotFound);
 
         var cartItmes = await _cartService.GetUserCartAsync(userId);
-        var price = cartItmes.Sum(ci => ci.ProductVersion.Product.Price * ci.Quantity);
+
+        decimal price = 0;
+        foreach (var e in cartItmes) {
+            var pv = await _context.ProductVersions.Include(pv => pv.Product)
+                .FirstOrDefaultAsync(pv => pv.Id == e.ProductVersionId);
+            if (pv is null)
+                throw new NotFoundException(ExceptionMessages.ProductVersionNotFound);
+
+            price += pv.Product.Price;
+        }
+
         await _cartService.DeleteUserCartAsync(userId);
         
         var order = new Order { Price = price, UserId = userId, AddressId = address.Id, CreatedAt = DateTime.UtcNow, OrderStatus = OrderStatus.Processing };
         await _context.Orders.AddAsync(order);
         await _context.SaveChangesAsync();
+        
         var orderTransaction = new OrderTransaction { UpdatedAt = order.CreatedAt, OrderTransactionStatus = order.OrderStatus, OrderId = order.Id };
         var orderItems = cartItmes.Select(ci => new OrderItem { OrderId = order.Id, ProductVersionId = ci.ProductVersionId, Quantity = ci.Quantity } );
         order.OrderTransactions.Add(orderTransaction);
         order.OrderItems.AddRange(orderItems);
         await _context.SaveChangesAsync();
-        var existringOrder = await _context.Orders.ProjectToType<OrderDto>()
-            .FirstAsync(o => o.Id == order.Id);
-        return existringOrder;
+
+        return order.AdaptToDto();
     }
 
     public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
@@ -76,21 +91,34 @@ public class OrderService : IOrderService
         return order;
     }
 
-    public async Task<OrderDto> UpdateOrderAsync(int orderId, OrderUpdate dto)
+    public async Task<OrderDto> UpdateOrderStatusAsync(int orderId, OrderUpdate dto)
     {
-        var existringOrder = await _context.Orders.FindAsync(orderId);
+        var existingOrder = await _context.Orders.FindAsync(orderId);
 
-        if (existringOrder == null)
+        if (existingOrder == null)
             throw new NotFoundException(ExceptionMessages.OrderNotFound);
 
-        if (!Enum.TryParse<OrderStatus>(dto.OrderStatus, out var status))
-            throw new OrderStatusException(ExceptionMessages.WrongOrderStatus);
+        if (!Enum.TryParse<OrderStatus>(dto.OrderStatus, out var newStatus))
+            throw new NotFoundException(ExceptionMessages.OrderStatusNotFound);
 
-        var orderTransaction = new OrderTransaction { OrderId = orderId, UpdatedAt = DateTime.UtcNow, OrderTransactionStatus = status };
-        existringOrder.OrderTransactions.Add(orderTransaction);
-        existringOrder.OrderStatus = status;
+        var allowedTransitions = new Dictionary<OrderStatus, List<OrderStatus>>
+        {
+            { OrderStatus.Processing, new List<OrderStatus> { OrderStatus.Delivering, OrderStatus.Cancelled } },
+            { OrderStatus.Delivering, new List<OrderStatus> { OrderStatus.Completed, OrderStatus.Cancelled } },
+            { OrderStatus.Completed, new List<OrderStatus>() },
+            { OrderStatus.Cancelled, new List<OrderStatus>() }
+        };
+
+        if (!(allowedTransitions.TryGetValue(existingOrder.OrderStatus, out var allowedNextStatus) &&
+            allowedNextStatus.Contains(newStatus)))
+            throw new InvalidOperationException(ExceptionMessages.WrongOrderStatusTransition);
+        
+        existingOrder.OrderStatus = newStatus;
+
+        var orderTransaction = new OrderTransaction { OrderId = orderId, UpdatedAt = DateTime.UtcNow, OrderTransactionStatus = newStatus };
+        existingOrder.OrderTransactions.Add(orderTransaction);
 
         await _context.SaveChangesAsync();
-        return existringOrder.AdaptToDto();
+        return existingOrder.AdaptToDto();
     }
 }

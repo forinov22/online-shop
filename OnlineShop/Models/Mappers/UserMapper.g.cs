@@ -20,13 +20,6 @@ public static partial class UserMapper
             LastName = entity.LastName,
             Password = entity.Password,
             UserType = Enum<UserType>.ToString(entity.UserType),
-            Address = entity.Address == null ? null : new AddressDto()
-            {
-                Id = entity.Address.Id,
-                AddressString = entity.Address.AddressString,
-                UserId = entity.Address.UserId,
-                User = TypeAdapterConfig.GetMapFunction<User, UserDto>().Invoke(entity.Address.User)
-            }
         };
     }
     

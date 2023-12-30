@@ -16,17 +16,6 @@ public static partial class AddressMapper
             Id = entity.Id,
             AddressString = entity.AddressString,
             UserId = entity.UserId,
-            User = entity.User == null ? null : new UserDto()
-            {
-                Id = entity.User.Id,
-                Email = entity.User.Email,
-                Phone = entity.User.Phone,
-                FirstName = entity.User.FirstName,
-                LastName = entity.User.LastName,
-                Password = entity.User.Password,
-                UserType = Enum<UserType>.ToString(entity.User.UserType),
-                Address = TypeAdapterConfig.GetMapFunction<Address, AddressDto>().Invoke(entity.User.Address)
-            }
         };
     }
     

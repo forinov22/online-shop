@@ -6,5 +6,4 @@ public record OrderTransactionDto
     public DateTime UpdatedAt { get; set; }
     public string OrderTransactionStatus { get; set; }
     public int OrderId { get; set; }
-    public OrderDto Order { get; set; }
 }

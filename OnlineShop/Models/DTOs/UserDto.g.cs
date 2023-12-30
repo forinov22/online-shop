@@ -9,5 +9,5 @@ public record UserDto
     public string LastName { get; set; }
     public string Password { get; set; }
     public string UserType { get; set; }
-    public AddressDto Address { get; set; }
+    public int AddressId { get; set; }
 }

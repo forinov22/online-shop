@@ -43,12 +43,18 @@ public class ProductService : IProductService
 
     public async Task<ProductDto> CreateProductAsync(ProductAdd dto)
     {
+        var brand = await _context.Brands.FindAsync(dto.BrandId);
+        if (brand is null)
+            throw new NotFoundException(ExceptionMessages.BrandNotFound);
+        
+        var category = await _context.Categories.FindAsync(dto.CategoryId);
+        if (category is null)
+            throw new NotFoundException(ExceptionMessages.CategoryNotFound);
+        
         var product = dto.AdaptToProduct();
         await _context.Products.AddAsync(product);
         await _context.SaveChangesAsync();
-        var existingProduct = await _context.Products.ProjectToType<ProductDto>()
-            .FirstAsync(p => p.Id == product.Id);
-        return existingProduct;
+        return product.AdaptToDto();
     }
 
     public async Task<ProductDto> UpdateProductAsync(int productId, ProductUpdate dto)
@@ -58,11 +64,8 @@ public class ProductService : IProductService
 
         if (existingProduct == null)
             throw new NotFoundException(ExceptionMessages.ProductNotFound);
-
-        existingProduct.Name = dto.Name;
+        
         existingProduct.Price = dto.Price;
-        existingProduct.BrandId = dto.BrandId;
-        existingProduct.CategoryId = dto.CategoryId;
         existingProduct.AverageRating = dto.AverageRating;
 
         await _context.SaveChangesAsync();
@@ -71,13 +74,24 @@ public class ProductService : IProductService
 
     public async Task<ProductDto> DeleteProductAsync(int productId)
     {
-        var existingProduct = await _context.Products
+        var existingProduct = await _context.Products.Include(p => new {p.Media, p.ProductVersions, p.Reviews})
             .FirstOrDefaultAsync(p => p.Id == productId);
-
         if (existingProduct == null)
             throw new NotFoundException(ExceptionMessages.ProductNotFound);
 
+        if (existingProduct.ProductVersions.Count > 0)
+            throw new InvalidOperationException(ExceptionMessages.ProductHasProductVersions);
+        
+        foreach (var m in existingProduct.Media)
+        {
+            _context.Remove(m);
+        }
 
+        foreach (var r in existingProduct.Reviews)
+        {
+            _context.Remove(r);
+        }
+        
         _context.Products.Remove(existingProduct);
         await _context.SaveChangesAsync();
         return existingProduct.AdaptToDto();

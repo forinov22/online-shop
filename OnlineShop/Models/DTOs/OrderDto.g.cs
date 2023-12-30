@@ -8,6 +8,4 @@ public record OrderDto
     public int AddressId { get; set; }
     public DateTime CreatedAt { get; set; }
     public string OrderStatus { get; set; }
-    public AddressDto Address { get; set; }
-    public UserDto User { get; set; }
 }

@@ -18,17 +18,6 @@ public static partial class ProductMapper
             BrandId = entity.BrandId,
             CategoryId = entity.CategoryId,
             AverageRating = entity.AverageRating,
-            Brand = entity.Brand == null ? null : new BrandDto{
-                Id = entity.Brand.Id,
-                Name = entity.Brand.Name
-            },
-            Category = entity.Category == null ? null : new CategoryDto()
-            {
-                Id = entity.Category.Id,
-                Name = entity.Category.Name,
-                ParentCategoryId = entity.Category.ParentCategoryId,
-                ParentCategory = TypeAdapterConfig.GetMapFunction<Category, CategoryDto>().Invoke(entity.Category.ParentCategory)
-            }
         };
     }
     
@@ -39,8 +28,7 @@ public static partial class ProductMapper
             Name = dto.Name,
             Price = dto.Price,
             BrandId = dto.BrandId,
-            CategoryId = dto.CategoryId,
-            AverageRating = dto.AverageRating
+            CategoryId = dto.CategoryId
         };
     }
 }

@@ -39,7 +39,7 @@ public class CategoriesController : ControllerBase
     [HttpPut("{categoryId:int}")]
     public async Task<ActionResult<CategoryDto>> UpdateCategory([FromRoute] int categoryId, [FromBody] CategoryUpdate dto)
     {
-        var category = await _categoryService.UpdateCategoryAsync(categoryId, dto);
+        var category = await _categoryService.UpdateCategoryNameAsync(categoryId, dto);
         return category;
     }
     

@@ -34,11 +34,10 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 
 TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
-TypeAdapterConfig.GlobalSettings.Compile();
 
 var app = builder.Build();
 
-app.MigrateDb();
+//app.MigrateDb();
 
 app.UseExceptionHandling();
 

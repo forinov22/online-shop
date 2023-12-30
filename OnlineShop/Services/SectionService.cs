@@ -1,5 +1,6 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using OnlineShop.Controllers;
 using OnlineShop.Data;
 using OnlineShop.Exceptions;
 using OnlineShop.Models.DTOs;

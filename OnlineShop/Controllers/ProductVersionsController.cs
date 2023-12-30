@@ -40,7 +40,7 @@ public class ProductVersionsController : ControllerBase
     public async Task<ActionResult<ProductVersionDto>> UpdateProductVersion([FromRoute] int productId,
         [FromBody] ProductVersionUpdate dto)
     {
-        var productVersion = await _productVersionService.UpdateProductVersionAsync(productId, dto);
+        var productVersion = await _productVersionService.UpdateProductVersionQuantityAsync(productId, dto);
         return productVersion;
     }
     

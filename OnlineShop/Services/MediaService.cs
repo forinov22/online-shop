@@ -27,6 +27,10 @@ public class MediaService : IMediaService
 
     public async Task<MediaDto> CreateMediaAsync(MediaAdd dto)
     {
+        var product = await _context.Products.FindAsync(dto.ProductId);
+        if (product is null)
+            throw new NotFoundException(ExceptionMessages.ProductNotFound);
+        
         var media = dto.AdaptToMedia();
 
         using (var memoryStream = new MemoryStream())
@@ -40,15 +44,12 @@ public class MediaService : IMediaService
 
         await _context.Medias.AddAsync(media);
         await _context.SaveChangesAsync();
-        var existingMedia = await _context.Medias.ProjectToType<MediaDto>()
-            .FirstAsync(m => m.Id == media.Id);
-        return existingMedia;
+        return media.AdaptToDto();
     }
 
     public async Task<MediaDto> DeleteMediaAsync(int mediaId)
     {
         var existingMedia = await _context.Medias.FindAsync(mediaId);
-
         if (existingMedia == null)
             throw new NotFoundException(ExceptionMessages.MediaNotFound);
 
@@ -60,7 +61,6 @@ public class MediaService : IMediaService
     public async Task<(byte[], string)> GetImageByMedaIdAsync(int mediaId)
     {
         var media = await _context.Medias.FindAsync(mediaId);
-
         if (media == null)
             throw new NotFoundException(ExceptionMessages.MediaNotFound);
 
@@ -71,7 +71,6 @@ public class MediaService : IMediaService
     {
         var media = await _context.Medias.ProjectToType<MediaDto>()
             .FirstOrDefaultAsync(m => m.Id == mediaId);
-
         if (media == null)
             throw new NotFoundException(ExceptionMessages.MediaNotFound);
 

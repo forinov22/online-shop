@@ -35,11 +35,13 @@ public class AddressService : IAddressService
 
     public async Task<AddressDto> CreateAddressAsync(AddressAdd dto)
     {
+        var user = await _context.Users.FindAsync(dto.UserId);
+        if (user is null)
+            throw new NotFoundException(ExceptionMessages.UserNotFound);
+
         var address = dto.AdaptToAddress();
         await _context.Addresses.AddAsync(address);
         await _context.SaveChangesAsync();
-        var existingAddress = await _context.Addresses.ProjectToType<AddressDto>()
-            .FirstAsync(a => a.Id == address.Id);
-        return existingAddress;
+        return address.AdaptToDto();
     }
 }

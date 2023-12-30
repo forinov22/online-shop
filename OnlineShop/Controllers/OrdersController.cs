@@ -59,7 +59,7 @@ public class OrdersController : ControllerBase
     [HttpPut("{orderId:int}")]
     public async Task<ActionResult<OrderDto>> UpdateOrder([FromRoute] int orderId, [FromBody] OrderUpdate dto)
     {
-        var order = await _orderService.UpdateOrderAsync(orderId, dto);
+        var order = await _orderService.UpdateOrderStatusAsync(orderId, dto);
         return order == null ? NotFound() : order;
     }
 }

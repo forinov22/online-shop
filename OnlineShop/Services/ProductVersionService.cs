@@ -12,7 +12,7 @@ public interface IProductVersionService
     Task<ProductVersionDto> GetProductVersionByIdAsync(int productVersionId);
     Task<IEnumerable<ProductVersionDto>> GetAllProductVersionsByProductIdAsync(int productId);
     Task<ProductVersionDto> CreateProductVersionAsync(ProductVersionAdd dto);
-    Task<ProductVersionDto> UpdateProductVersionAsync(int productVersionId, ProductVersionUpdate dto);
+    Task<ProductVersionDto> UpdateProductVersionQuantityAsync(int productVersionId, ProductVersionUpdate dto);
     Task<ProductVersionDto> DeleteProductVersionAsync(int productVersionId);
 }
 
@@ -29,7 +29,6 @@ public class ProductVersionService : IProductVersionService
     {
         var productVersion = await _context.ProductVersions.ProjectToType<ProductVersionDto>()
             .FirstOrDefaultAsync(pv => pv.Id == productVersionId);
-
         if (productVersion == null)
             throw new NotFoundException(ExceptionMessages.ProductVersionNotFound);
 
@@ -44,15 +43,25 @@ public class ProductVersionService : IProductVersionService
 
     public async Task<ProductVersionDto> CreateProductVersionAsync(ProductVersionAdd dto)
     {
+        var product = await _context.Products.FindAsync(dto.ProductId);
+        if (product is null)
+            throw new NotFoundException(ExceptionMessages.ProductNotFound);
+
+        var size = await _context.Sizes.FindAsync(dto.SizeId);
+        if (size is null)
+            throw new NotFoundException(ExceptionMessages.SizeNotFound);
+
+        var color = await _context.Colors.FindAsync(dto.ColorId);
+        if (color is null)
+            throw new NotFoundException(ExceptionMessages.ColorNotFound);
+        
         var productVersion = dto.AdaptToProductVersion();
         await _context.ProductVersions.AddAsync(productVersion);
         await _context.SaveChangesAsync();
-        var existingProductVersion = await _context.ProductVersions.ProjectToType<ProductVersionDto>()
-            .FirstAsync(pv => pv.Id == productVersion.Id);
-        return existingProductVersion;
+        return productVersion.AdaptToDto();
     }
 
-    public async Task<ProductVersionDto> UpdateProductVersionAsync(int productVersionId, ProductVersionUpdate dto)
+    public async Task<ProductVersionDto> UpdateProductVersionQuantityAsync(int productVersionId, ProductVersionUpdate dto)
     {
         var existingProductVersion = await _context.ProductVersions.FindAsync(productVersionId);
 
@@ -60,10 +69,6 @@ public class ProductVersionService : IProductVersionService
             throw new NotFoundException(ExceptionMessages.ProductVersionNotFound);
 
         existingProductVersion.Quantity = dto.Quantity;
-        existingProductVersion.Sku = dto.Sku;
-        existingProductVersion.ProductId = dto.ProductId;
-        existingProductVersion.SizeId = dto.SizeId;
-        existingProductVersion.ColorId = dto.ColorId;
 
         await _context.SaveChangesAsync();
         return existingProductVersion.AdaptToDto();
@@ -71,11 +76,19 @@ public class ProductVersionService : IProductVersionService
 
     public async Task<ProductVersionDto> DeleteProductVersionAsync(int productVersionId)
     {
-        var existingProductVersion = await _context.ProductVersions.FindAsync(productVersionId);
-
+        var existingProductVersion = await _context.ProductVersions.Include(pv => new { pv.CartItems, pv.OrderItems })
+            .FirstOrDefaultAsync(pv => pv.Id == productVersionId);
         if (existingProductVersion == null)
             throw new NotFoundException(ExceptionMessages.ProductVersionNotFound);
 
+        if (existingProductVersion.OrderItems.Count > 0)
+            throw new InvalidOperationException(ExceptionMessages.ProductVersionHasOrders);
+
+        foreach (var ci in existingProductVersion.CartItems)
+        {
+            _context.Remove(ci);
+        }
+        
         _context.ProductVersions.Remove(existingProductVersion);
         await _context.SaveChangesAsync();
         return existingProductVersion.AdaptToDto();

@@ -23,11 +23,15 @@ public class ExceptionHandlingMiddleware
         {
             await SendError(context, e);
         }
+        catch (AlreadyExistsException e)
+        {
+            await SendError(context, e);
+        }
         catch (AuthorizationException e)
         {
             await SendError(context, e);
         }
-        catch (OrderStatusException e)
+        catch (InvalidOperationException e)
         {
             await SendError(context, e);
         }

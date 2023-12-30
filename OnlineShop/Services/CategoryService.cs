@@ -12,7 +12,9 @@ public interface ICategoryService
     Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync();
     Task<CategoryDto> GetCategoryByIdAsync(int categoryId);
     Task<CategoryDto> CreateCategoryAsync(CategoryAdd dto);
-    Task<CategoryDto> UpdateCategoryAsync(int categoryId, CategoryUpdate dto);
+    Task<CategoryDto> UpdateCategoryNameAsync(int categoryId, CategoryUpdate dto);
+    Task<CategoryDto> AddCategoryToSectionAsync(int categoryId, int sectionId);
+    Task<CategoryDto> RemoveCategoryFromSectionAsync(int categoryId, int sectionId);
     Task<CategoryDto> DeleteCategoryAsync(int categoryId);
 }
 
@@ -43,24 +45,24 @@ public class CategoryService : ICategoryService
 
     public async Task<CategoryDto> CreateCategoryAsync(CategoryAdd dto)
     {
-        var category = dto.AdaptToCategory();
+        var candidate = await _context.Categories.FirstOrDefaultAsync(c => c.Name == dto.Name);
+        if (candidate is not null)
+            throw new AlreadyExistsException(ExceptionMessages.CategoryAlreadyExists);
 
-        foreach (var sectionId in dto.Sections)
+        if (dto.ParentCategoryId is not null)
         {
-            var section = await _context.Sections.FindAsync(sectionId);
-            if (section == null)
-                throw new NotFoundException(ExceptionMessages.SectionNotFound);
-            category.Sections.Add(section);
+            var parent = await _context.Categories.FindAsync(dto.ParentCategoryId);
+            if (parent is null)
+                throw new NotFoundException(ExceptionMessages.CategoryNotFound);
         }
-
+        
+        var category = dto.AdaptToCategory();
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
-        var existingCategory = await _context.Categories.ProjectToType<CategoryDto>()
-            .FirstAsync(c => c.Id == category.Id);
-        return existingCategory;
+        return category.AdaptToDto();
     }
 
-    public async Task<CategoryDto> UpdateCategoryAsync(int categoryId, CategoryUpdate dto)
+    public async Task<CategoryDto> UpdateCategoryNameAsync(int categoryId, CategoryUpdate dto)
     {
         var existingCategory = await _context.Categories
             .FirstOrDefaultAsync(c => c.Id == categoryId);
@@ -68,8 +70,11 @@ public class CategoryService : ICategoryService
         if (existingCategory == null)
             throw new NotFoundException(ExceptionMessages.CategoryNotFound);
 
+        var candidate = await _context.Categories.FirstOrDefaultAsync(c => c.Name == dto.Name);
+        if (candidate is not null)
+            throw new AlreadyExistsException(ExceptionMessages.CategoryAlreadyExists);
+        
         existingCategory.Name = dto.Name;
-        existingCategory.ParentCategoryId = dto?.ParentCategoryId;
         
         await _context.SaveChangesAsync();
         return existingCategory.AdaptToDto();
@@ -77,13 +82,56 @@ public class CategoryService : ICategoryService
 
     public async Task<CategoryDto> DeleteCategoryAsync(int categoryId)
     {
-        var existingCategory = await _context.Categories.FindAsync(categoryId);
+        var existingCategory = await _context.Categories.Include(c => c.Products)
+            .FirstOrDefaultAsync(c => c.Id == categoryId);
 
         if (existingCategory == null)
             throw new NotFoundException(ExceptionMessages.CategoryNotFound);
 
+        if (existingCategory.Products.Count > 0)
+            throw new InvalidOperationException(ExceptionMessages.CategoryHasProducts);
+
         _context.Categories.Remove(existingCategory);
         await _context.SaveChangesAsync();
         return existingCategory.AdaptToDto();
+    }
+
+    public async Task<CategoryDto> AddCategoryToSectionAsync(int categoryId, int sectionId)
+    {
+        var category = await _context.Categories.Include(c => c.Sections)
+            .FirstOrDefaultAsync(c => c.Id == categoryId);
+        if (category is null)
+            throw new NotFoundException(ExceptionMessages.CategoryNotFound);
+
+        var section = await _context.Sections.FindAsync(sectionId);
+        if (section is null)
+            throw new NotFoundException(ExceptionMessages.SectionNotFound);
+        
+
+        if (category.Sections.Contains(section))
+            throw new AlreadyExistsException(ExceptionMessages.SectionCategoryAlreadyExists);
+
+        category.Sections.Add(section);
+        await _context.SaveChangesAsync();
+        return category.AdaptToDto();
+    }
+
+    public async Task<CategoryDto> RemoveCategoryFromSectionAsync(int categoryId, int sectionId)
+    {
+        var category = await _context.Categories.Include(c => c.Sections)
+            .FirstOrDefaultAsync(c => c.Id == categoryId);
+        if (category is null)
+            throw new NotFoundException(ExceptionMessages.CategoryNotFound);
+
+        var section = await _context.Sections.FindAsync(sectionId);
+        if (section is null)
+            throw new NotFoundException(ExceptionMessages.SectionNotFound);
+
+        if (!category.Sections.Contains(section))
+            throw new NotFoundException(ExceptionMessages.SectionCategoryAlreadyExists);
+
+        category.Sections.Remove(section);
+        await _context.SaveChangesAsync();
+        return category.AdaptToDto();
     }
 }

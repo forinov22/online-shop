@@ -39,7 +39,7 @@ public class BrandsController : ControllerBase
     [HttpPut("{brandId:int}")]
     public async Task<ActionResult<BrandDto>> UpdateBrand([FromRoute] int brandId, [FromBody] BrandUpdate dto)
     {
-        var updatedBrand = await _brandService.UpdateBrandAsync(brandId, dto);
+        var updatedBrand = await _brandService.UpdateBrandNameAsync(brandId, dto);
         return updatedBrand;
     }
     

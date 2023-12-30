@@ -43,22 +43,26 @@ public class ColorService : IColorService
 
     public async Task<ColorDto> CreateColorAsync(ColorAdd dto)
     {
+        var candidate = await _context.Colors.FirstOrDefaultAsync(c => c.Name == dto.Name);
+        if (candidate is not null)
+            throw new AlreadyExistsException(ExceptionMessages.ColorAlreadyExists);
+        
         var color = dto.AdaptToColor();
         await _context.Colors.AddAsync(color);
         await _context.SaveChangesAsync();
-        var existingColor = await _context.Colors.ProjectToType<ColorDto>()
-            .FirstAsync(c => c.Id == color.Id);
-        return existingColor;
+        return color.AdaptToDto();
     }
 
     public async Task<ColorDto> UpdateColorAsync(int colorId, ColorUpdate dto)
     {
         var existingColor = await _context.Colors.FindAsync(colorId);
-
         if (existingColor == null)
             throw new NotFoundException(ExceptionMessages.ColorNotFound);
 
-
+        var candidate = await _context.Colors.FirstOrDefaultAsync(c => c.Name == dto.Name);
+        if (candidate is not null)
+            throw new AlreadyExistsException(ExceptionMessages.ColorAlreadyExists);
+        
         existingColor.Name = dto.Name;
 
         await _context.SaveChangesAsync();
@@ -67,11 +71,12 @@ public class ColorService : IColorService
 
     public async Task<ColorDto> DeleteColorAsync(int colorId)
     {
-        var existingColor = await _context.Colors.FindAsync(colorId);
-
+        var existingColor = await _context.Colors.Include(c => c.ProductVersions)
+            .FirstOrDefaultAsync(c => c.Id == colorId);
         if (existingColor == null)
             throw new NotFoundException(ExceptionMessages.ColorNotFound);
-
+        if (existingColor.ProductVersions.Count > 0)
+            throw new InvalidOperationException(ExceptionMessages.ColorHasProductVersions);
 
         _context.Colors.Remove(existingColor);
         await _context.SaveChangesAsync();

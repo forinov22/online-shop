@@ -6,5 +6,4 @@ public record ProductAdd
     public decimal Price { get; set; }
     public int BrandId { get; set; }
     public int CategoryId { get; set; }
-    public double AverageRating { get; set; }
 }

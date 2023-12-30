@@ -9,6 +9,4 @@ public record ReviewDto
     public int UserId { get; set; }
     public string Title { get; set; }
     public DateTime CreatedAt { get; set; }
-    public ProductDto Product { get; set; }
-    public UserDto User { get; set; }
 }
